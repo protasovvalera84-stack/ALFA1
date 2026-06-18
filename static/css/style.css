@@ -505,6 +505,15 @@ footer a {
   border-width: 0;
 }
 
+/* ── AOS fallback — показываем контент если CDN заблокирован ─ */
+/* Когда AOS загружается — он добавляет class aos-initialized на <html>
+   Если этого не произошло — весь контент отображается сразу */
+html:not(.aos-initialized) [data-aos] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
 /* ── Reduced motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
