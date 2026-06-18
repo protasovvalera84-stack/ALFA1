@@ -1,45 +1,32 @@
 # Все скрипты проекта «Альфа Юнит-1»
 
-## ⚡ Быстрый старт на Ubuntu 22.04 / 24.04
+## ⚡ Установка (одна команда, Ubuntu 22.04/24.04)
 
 ```bash
-# Автоматическая установка (рекомендуется)
-git clone https://github.com/protasovvalera84-stack/ALFA1.git
-cd ALFA1
-chmod +x setup.sh
-sudo ./setup.sh
-
-# ИЛИ вручную (Docker уже установлен):
-git clone https://github.com/protasovvalera84-stack/ALFA1.git
-cd ALFA1
-cp .env.example .env
-nano .env              # Установить ADMIN_PASSWORD и SITE_DOMAIN
-docker compose up -d   # ВАЖНО: "docker compose", не "docker-compose"!
+bash <(curl -fsSL https://raw.githubusercontent.com/protasovvalera84-stack/ALFA1/main/setup.sh)
 ```
 
-> **Ubuntu 24.04:** используйте `docker compose` (с пробелом).  
-> `docker-compose` (через дефис) — устаревшая версия v1, не устанавливается автоматически.  
-> `docker compose` (v2, plugin) — уже включён в установку Docker Engine.
+Скрипт сам: установит Docker → скачает код → создаст .env → запустит сайт → покажет пароль.
 
+> **Ubuntu 24.04:** используйте `docker compose` (с пробелом), НЕ `docker-compose` (с дефисом).
+> `docker compose` (v2 plugin) входит в Docker Engine. `docker-compose` (v1) не установлен.
 
-## Разработка
+---
+
+## Разработка (локально)
 
 ```bash
-# Запуск в режиме разработки
-cd ALFA1
+# Запуск без Docker
 go run main.go
 
 # Сборка бинарника
 go build -o alfa1 .
 
-# Запуск тестов
-go test ./...
-
-# Линтинг
+# Проверка кода
 go vet ./...
-gofmt -l .
+go build -o /dev/null ./...
 
-# Проверка зависимостей
+# Зависимости
 go mod tidy
 go mod verify
 ```
@@ -47,14 +34,11 @@ go mod verify
 ## Docker
 
 ```bash
-# Собрать образ
-docker build -t alfa1:latest .
-
-# Запустить в Docker
-docker run -p 8080:8080 -v $(pwd)/data:/app/data alfa1:latest
-
 # Запустить через Compose (рекомендуется)
 docker compose up -d
+
+# Первый запуск + сборка образа
+docker compose up -d --build
 
 # Остановить
 docker compose down
@@ -62,125 +46,115 @@ docker compose down
 # Посмотреть логи
 docker compose logs -f
 
-# Пересобрать после изменений
+# Логи только приложения
+docker compose logs -f app
+
+# Перезапустить приложение
+docker compose restart app
+
+# Пересобрать после git pull
 docker compose up -d --build
 
-# Проверить статус контейнеров
+# Проверить статус
 docker compose ps
 ```
 
-## База данных
+## База данных (SQLite)
 
 ```bash
 # Подключиться к SQLite (внутри контейнера)
 docker exec -it alfa1_app sqlite3 /app/data/alfa1.db
 
-# Резервная копия
-docker exec alfa1_app sqlite3 /app/data/alfa1.db ".backup /app/data/backup.db"
-
-# Скопировать бэкап на хост
-docker cp alfa1_app:/app/data/backup.db ./backup_$(date +%Y%m%d).db
-
-# Просмотр таблиц
+# Посмотреть таблицы
 sqlite3 data/alfa1.db ".tables"
 
 # Посмотреть заявки
 sqlite3 data/alfa1.db "SELECT * FROM contacts ORDER BY created_at DESC LIMIT 10;"
+
+# Резервная копия
+docker exec alfa1_app sqlite3 /app/data/alfa1.db ".backup /app/data/backup.db"
+docker cp alfa1_app:/app/data/backup.db ./backup_$(date +%Y%m%d).db
+
+# Восстановить из бэкапа
+docker cp backup_YYYYMMDD.db alfa1_app:/app/data/backup.db
+docker exec alfa1_app cp /app/data/backup.db /app/data/alfa1.db
+docker compose restart app
 ```
 
-## Деплой на сервер Linux
+## Деплой на сервер (Ubuntu 24.04)
 
 ```bash
-# Клонировать репозиторий
+# Автоматически (рекомендуется):
+bash <(curl -fsSL https://raw.githubusercontent.com/protasovvalera84-stack/ALFA1/main/setup.sh)
+
+# Вручную (Docker уже установлен):
 git clone https://github.com/protasovvalera84-stack/ALFA1.git
 cd ALFA1
-
-# Скопировать конфиг
 cp .env.example .env
-nano .env  # Установить пароль, домен, порт
-
-# Установить Docker (если нет)
-curl -fsSL https://get.docker.com | sh
-systemctl enable docker
-systemctl start docker
-
-# Установить Docker Compose
-apt install docker compose-plugin
-
-# Запустить сайт
+nano .env        # установить ADMIN_PASSWORD
 docker compose up -d
 
-# Проверить работу
-curl http://localhost:8080
-
-# Автозапуск при перезагрузке (уже настроен через restart: always)
+# Обновить до последней версии:
+cd ~/ALFA1
+git fetch origin main
+git reset --hard origin/main
+docker compose up -d --build
 ```
 
-## Nginx (SSL, HTTPS)
+## SSL (HTTPS, после регистрации домена)
 
 ```bash
-# Установить Certbot (Let's Encrypt)
+# 1. Установить Certbot
 apt install certbot python3-certbot-nginx
 
-# Получить SSL сертификат
-certbot --nginx -d alfaunit1.ru -d www.alfaunit1.ru
+# 2. Получить SSL-сертификат
+certbot certonly --standalone -d ВАШИ_ДОМЕН -d www.ВАШИ_ДОМЕН
 
-# Обновить сертификат (автоматически через cron)
+# 3. Запустить с nginx + SSL
+docker compose --profile nginx up -d
+
+# 4. Авто-продление (уже настроено в cron)
 certbot renew --dry-run
-
-# Перезагрузить nginx
-nginx -t && nginx -s reload
 ```
 
-## Обновление сайта
+## Nginx (только с профилем nginx)
 
 ```bash
-# Получить последние изменения
-git pull origin main
+# Запустить с nginx
+docker compose --profile nginx up -d
 
-# Пересобрать и перезапустить
-docker compose up -d --build
+# Перезагрузить конфиг nginx
+docker exec alfa1_nginx nginx -s reload
 
-# Проверить статус
-docker compose ps
-docker compose logs --tail=20
+# Проверить конфиг nginx
+docker exec alfa1_nginx nginx -t
 ```
 
 ## Мониторинг
 
 ```bash
-# Использование ресурсов
+# Ресурсы контейнеров
 docker stats alfa1_app
 
-# Проверка ответа сервера
-curl -I https://alfaunit1.ru
+# Проверка ответа сайта
+curl -I http://186.246.12.46
 
 # Проверка sitemap
-curl https://alfaunit1.ru/sitemap.xml
+curl http://186.246.12.46/sitemap.xml
 
 # Проверка robots.txt
-curl https://alfaunit1.ru/robots.txt
-
-# Проверка schema.org
-curl https://alfaunit1.ru | grep -o '"@type":"[^"]*"'
+curl http://186.246.12.46/robots.txt
 ```
 
-## SEO Проверки
+## SEO-проверки
 
 ```bash
-# Проверить скорость (через API PageSpeed)
-curl "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://alfaunit1.ru&strategy=mobile"
-
-# Проверить индексацию Google
-# Перейти в https://search.google.com/search-console
-
-# Проверить индексацию Яндекс
-# Перейти в https://webmaster.yandex.ru/
+# PageSpeed (через API)
+curl "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=http://186.246.12.46"
 
 # Проверить schema.org
-# https://validator.schema.org/
-# Вставить URL сайта
+curl -s http://186.246.12.46 | grep -o '"@type":"[^"]*"'
 
 # Проверить мета-теги
-curl -s https://alfaunit1.ru | grep -E "<title>|<meta name="description""
+curl -s http://186.246.12.46 | grep -E '<title>|<meta name="description"'
 ```
