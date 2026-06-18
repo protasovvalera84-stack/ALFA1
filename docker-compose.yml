@@ -1,12 +1,16 @@
 # ═══════════════════════════════════════════════════════════════
-# Альфа Юнит-1 — Docker Compose
-# Запуск: docker-compose up -d
-# Остановка: docker-compose down
+# Альфа Юнит-1 — Docker Compose (Compose v2, Ubuntu 24.04+)
+# Запуск (без nginx, порт 80):  docker compose up -d
+# Запуск (с nginx/HTTPS):       docker compose --profile nginx up -d
+# Остановка:                    docker compose down
+# Логи:                         docker compose logs -f
+# Пересборка:                   docker compose up -d --build
 # ═══════════════════════════════════════════════════════════════
 
-version: "3.9"
+# NOTE: поле "version" убрано — оно устарело в Compose v2 (Docker ≥ 23)
 
 services:
+
   # ── Go application ───────────────────────────────────────────
   app:
     build:
@@ -15,45 +19,48 @@ services:
     container_name: alfa1_app
     restart: always
     env_file:
-      - .env
+      - path: .env
+        required: false   # не падать если .env ещё не создан
     environment:
       - PORT=8080
       - DB_PATH=/app/data/alfa1.db
       - APP_ENV=production
     volumes:
-      # Persist SQLite database between container restarts
+      # Сохраняем SQLite-базу между перезапусками
       - alfa1_data:/app/data
     ports:
-      # Expose only to nginx (or directly if no nginx)
-      - "127.0.0.1:8080:8080"
+      # Режим без nginx: сайт доступен напрямую на порту 80
+      - "80:8080"
     networks:
       - alfa1_net
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ > /dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 20s
+      start_period: 30s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
 
-  # ── Nginx reverse proxy (HTTPS, static caching) ──────────────
+  # ── Nginx (только с профилем nginx) ──────────────────────────
+  # Подключить после получения SSL:
+  #   certbot certonly --standalone -d ВАШИ_ДОМЕН
+  #   docker compose --profile nginx up -d
   nginx:
     image: nginx:alpine
     container_name: alfa1_nginx
     restart: always
+    profiles:
+      - nginx
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      # SSL certificates — mount from host after running certbot:
-      # sudo certbot certonly --standalone -d alfaunit1.ru -d www.alfaunit1.ru
       - /etc/letsencrypt:/etc/letsencrypt:ro
-      # Certbot webroot challenge
       - certbot_webroot:/var/www/certbot:ro
     depends_on:
       - app
@@ -65,10 +72,12 @@ services:
         max-size: "5m"
         max-file: "3"
 
-  # ── Certbot — auto-renew SSL (optional) ──────────────────────
+  # ── Certbot — авто-продление SSL (только с профилем nginx) ───
   certbot:
     image: certbot/certbot:latest
     container_name: alfa1_certbot
+    profiles:
+      - nginx
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt
       - certbot_webroot:/var/www/certbot
@@ -78,8 +87,6 @@ services:
         certbot renew --webroot -w /var/www/certbot --quiet;
         sleep 12h;
       done"
-    profiles:
-      - ssl # Only starts with: docker-compose --profile ssl up -d
 
 volumes:
   alfa1_data:

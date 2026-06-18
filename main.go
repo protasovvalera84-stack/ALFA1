@@ -1,5 +1,5 @@
 // Альфа Юнит-1 — корпоративный сайт охранной компании.
-// Запуск: go run main.go  или  docker-compose up -d
+// Запуск: go run main.go  или  docker compose up -d
 package main
 
 import (

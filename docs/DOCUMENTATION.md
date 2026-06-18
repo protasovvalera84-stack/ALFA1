@@ -270,7 +270,7 @@ cp data/alfa1.db data/alfa1_backup_$(date +%Y%m%d_%H%M).db
 # Восстановить
 cp data/alfa1_backup_20260601_1200.db data/alfa1.db
 # Перезапустить сервер
-docker-compose restart
+docker compose restart
 ```
 
 ---

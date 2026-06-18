@@ -1,5 +1,27 @@
 # Все скрипты проекта «Альфа Юнит-1»
 
+## ⚡ Быстрый старт на Ubuntu 22.04 / 24.04
+
+```bash
+# Автоматическая установка (рекомендуется)
+git clone https://github.com/protasovvalera84-stack/ALFA1.git
+cd ALFA1
+chmod +x setup.sh
+sudo ./setup.sh
+
+# ИЛИ вручную (Docker уже установлен):
+git clone https://github.com/protasovvalera84-stack/ALFA1.git
+cd ALFA1
+cp .env.example .env
+nano .env              # Установить ADMIN_PASSWORD и SITE_DOMAIN
+docker compose up -d   # ВАЖНО: "docker compose", не "docker-compose"!
+```
+
+> **Ubuntu 24.04:** используйте `docker compose` (с пробелом).  
+> `docker-compose` (через дефис) — устаревшая версия v1, не устанавливается автоматически.  
+> `docker compose` (v2, plugin) — уже включён в установку Docker Engine.
+
+
 ## Разработка
 
 ```bash
@@ -32,19 +54,19 @@ docker build -t alfa1:latest .
 docker run -p 8080:8080 -v $(pwd)/data:/app/data alfa1:latest
 
 # Запустить через Compose (рекомендуется)
-docker-compose up -d
+docker compose up -d
 
 # Остановить
-docker-compose down
+docker compose down
 
 # Посмотреть логи
-docker-compose logs -f
+docker compose logs -f
 
 # Пересобрать после изменений
-docker-compose up -d --build
+docker compose up -d --build
 
 # Проверить статус контейнеров
-docker-compose ps
+docker compose ps
 ```
 
 ## База данных
@@ -83,10 +105,10 @@ systemctl enable docker
 systemctl start docker
 
 # Установить Docker Compose
-apt install docker-compose-plugin
+apt install docker compose-plugin
 
 # Запустить сайт
-docker-compose up -d
+docker compose up -d
 
 # Проверить работу
 curl http://localhost:8080
@@ -117,11 +139,11 @@ nginx -t && nginx -s reload
 git pull origin main
 
 # Пересобрать и перезапустить
-docker-compose up -d --build
+docker compose up -d --build
 
 # Проверить статус
-docker-compose ps
-docker-compose logs --tail=20
+docker compose ps
+docker compose logs --tail=20
 ```
 
 ## Мониторинг

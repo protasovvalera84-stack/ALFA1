@@ -135,15 +135,20 @@ seo_settings    -- SEO-настройки для каждой страницы
 ## 7. Деплой
 
 ```bash
-# Запуск через Docker Compose
+# Ubuntu 22.04 / 24.04 — Docker уже установлен:
 git clone https://github.com/protasovvalera84-stack/ALFA1.git
 cd ALFA1
 cp .env.example .env
-# Отредактировать .env (пароль admin, домен)
-docker-compose up -d
+nano .env              # установить ADMIN_PASSWORD и SITE_DOMAIN
 
-# Сайт доступен на http://localhost:8080
-# Admin: http://localhost:8080/admin
+# ВАЖНО: docker compose (с пробелом), НЕ docker-compose!
+docker compose up -d
+
+# Сайт доступен на http://ВАШ_IP (порт 80)
+# Admin: http://ВАШ_IP/admin/
+
+# Автоматический скрипт установки (рекомендуется):
+sudo ./setup.sh
 ```
 
 ## 8. Резервное копирование
