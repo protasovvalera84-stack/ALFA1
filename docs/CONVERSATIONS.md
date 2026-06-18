@@ -45,4 +45,13 @@
 
 ---
 
+### Итог — созданные файлы
+
+Go-бэкенд: `main.go`, `internal/db/`, `internal/models/`, `internal/handlers/`, `internal/middleware/`  
+Go-шаблоны: `templates/index.html`, `templates/sections_7_12.html`, `templates/admin/*.html`  
+Статика: `static/css/style.css`, `static/js/main.js`  
+React-фронтенд (Lovable/TanStack): `src/routes/__root.tsx`, `src/routes/index.tsx`, `src/styles.css`, `src/lib/site-meta.ts`  
+Docker: `Dockerfile`, `docker-compose.yml`, `nginx.conf`  
+Документация: `docs/PLAN_SITE.md`, `docs/PLAN_SEO.md`, `docs/DOCUMENTATION.md`, `docs/SCRIPTS.md`, `docs/ERRORS.md`
+
 _Файл обновляется при каждой рабочей сессии._
