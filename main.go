@@ -31,10 +31,21 @@ func main() {
 		log.Fatalf("database init: %v", err)
 	}
 
-	// Set admin password from environment on first boot (or when explicitly set).
+	// Apply ADMIN_PASSWORD from environment on every startup.
+	// This allows changing the password by editing .env and restarting.
 	if pwd := os.Getenv("ADMIN_PASSWORD"); pwd != "" {
-		existing := models.GetSetting("admin_password_hash")
-		if existing == "" {
+		// Only re-hash if the env password differs from the stored one
+		// (avoids unnecessary bcrypt work on every restart).
+		stored := models.GetSetting("admin_password_hash")
+		needUpdate := stored == "" // first boot
+		if !needUpdate {
+			// If stored hash can't be verified against the current env
+			// password, the password was changed in .env → update it.
+			if err := bcrypt.CompareHashAndPassword([]byte(stored), []byte(pwd)); err != nil {
+				needUpdate = true
+			}
+		}
+		if needUpdate {
 			hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
 			if err != nil {
 				log.Fatalf("bcrypt: %v", err)
@@ -42,7 +53,7 @@ func main() {
 			if err := models.SetSetting("admin_password_hash", string(hash)); err != nil {
 				log.Fatalf("set admin password: %v", err)
 			}
-			log.Println("main: admin password set from ADMIN_PASSWORD env")
+			log.Println("main: admin password updated from ADMIN_PASSWORD env")
 		}
 	}
 
