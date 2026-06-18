@@ -1,0 +1,27 @@
+# Binary
+alfa1
+alfa1.exe
+
+# Data
+data/*.db
+data/*.db-shm
+data/*.db-wal
+!data/.gitkeep
+
+# Environment
+.env
+
+# Go
+*.test
+*.out
+vendor/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

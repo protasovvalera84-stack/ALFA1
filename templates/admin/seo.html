@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{.Title}}</title>
+  <meta name="robots" content="noindex, nofollow">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{'bg-primary':'#05070A','bg-secondary':'#0B111B','gold':'#D4AF37','accent-blue':'#2D5FFF'}}}}</script>
+  <style>
+    .glass{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);}
+    .sidebar-link{display:flex;align-items:center;gap:.75rem;padding:.625rem 1rem;border-radius:.75rem;font-size:.875rem;color:rgba(255,255,255,.6);transition:all .2s;}
+    .sidebar-link:hover,.sidebar-link.active{background:rgba(212,175,55,.1);color:#D4AF37;}
+    .sidebar-link svg{width:1.25rem;height:1.25rem;flex-shrink:0;}
+    label{display:block;font-size:.8125rem;color:rgba(255,255,255,.55);margin-bottom:.375rem;}
+    input,select,textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:.75rem;padding:.6875rem 1rem;color:#fff;font-size:.875rem;transition:border-color .2s;}
+    input:focus,textarea:focus,select:focus{outline:none;border-color:#D4AF37;box-shadow:0 0 0 2px rgba(212,175,55,.2);}
+    textarea{resize:vertical;}
+    .checklist-item{display:flex;align-items:flex-start;gap:.75rem;padding:.875rem 1rem;border-radius:.75rem;transition:background .2s;}
+    .checklist-item:hover{background:rgba(255,255,255,.04);}
+    .check-badge{width:1.5rem;height:1.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.125rem;}
+    .check-done{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#22c55e;}
+    .check-todo{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.4);}
+    .tab-btn{padding:.5rem 1.25rem;border-radius:.625rem;font-size:.875rem;font-weight:600;transition:all .2s;cursor:pointer;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);}
+    .tab-btn.active{background:rgba(212,175,55,.15);border-color:rgba(212,175,55,.4);color:#D4AF37;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+  </style>
+</head>
+<body class="bg-bg-primary text-white min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="w-60 bg-bg-secondary border-r border-white/10 flex flex-col shrink-0 sticky top-0 h-screen overflow-y-auto">
+    <div class="p-5 border-b border-white/10">
+      <a href="/" target="_blank" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-gold flex items-center justify-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7V12C3 17.25 6.96 22.18 12 23.5C17.04 22.18 21 17.25 21 12V7L12 2Z" fill="#05070A"/><path d="M9 12L11 14L15 10" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><div class="text-sm font-bold tracking-wide">АЛЬФА ЮНИТ-1</div><div class="text-xs text-white/35">Admin Panel</div></div>
+      </a>
+    </div>
+    <nav class="flex-1 p-3 space-y-1">
+      <a href="/admin/" class="sidebar-link"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>Dashboard</a>
+      <a href="/admin/settings" class="sidebar-link"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Настройки</a>
+      <a href="/admin/services" class="sidebar-link"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/></svg>Услуги</a>
+      <a href="/admin/contacts" class="sidebar-link"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>Заявки {{if gt .UnreadCount 0}}<span class="ml-auto bg-gold text-black text-xs font-bold px-2 py-0.5 rounded-full">{{.UnreadCount}}</span>{{end}}</a>
+      <a href="/admin/seo" class="sidebar-link active"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>SEO-инструменты</a>
+    </nav>
+    <div class="p-3 border-t border-white/10">
+      <a href="/admin/logout" class="sidebar-link text-red-400/70 hover:text-red-400 hover:bg-red-500/10"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>Выйти</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 overflow-auto">
+    <div class="p-8 max-w-4xl">
+
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-2xl font-bold">SEO-инструменты</h1>
+        {{if .Saved}}<div class="bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-2 rounded-xl">✓ Сохранено</div>{{end}}
+      </div>
+
+      <!-- Tab navigation -->
+      <div class="flex flex-wrap gap-2 mb-8" id="seo-tabs">
+        <button class="tab-btn active" data-tab="meta">Meta-теги</button>
+        <button class="tab-btn" data-tab="robots">robots.txt</button>
+        <button class="tab-btn" data-tab="schema">Schema.org</button>
+        <button class="tab-btn" data-tab="sitemap">Sitemap</button>
+        <button class="tab-btn" data-tab="checklist">Чеклист 2026</button>
+        <button class="tab-btn" data-tab="tools">Инструменты</button>
+      </div>
+
+      <!-- ── Tab: Meta Tags ──────────────────────────────── -->
+      <div class="tab-panel active" id="tab-meta">
+        <form method="POST" action="/admin/seo">
+          <input type="hidden" name="slug" value="/">
+
+          <div class="glass border border-white/10 rounded-2xl p-6 mb-5">
+            <h2 class="font-semibold text-base mb-1 text-gold">Главная страница (/) — Meta-теги</h2>
+            <p class="text-white/40 text-xs mb-6">Эти теги отображаются в результатах поиска Google и Яндекс.</p>
+
+            <div class="space-y-5">
+              <div>
+                <label>
+                  Title (заголовок страницы)
+                  <span id="title-count" class="text-white/30 ml-2 font-mono"></span>
+                </label>
+                <input type="text" name="title" id="seo-title"
+                  value="{{.HomeSEO.Title}}"
+                  placeholder="Альфа Юнит-1 — Охранная компания в Санкт-Петербурге | С 2002 года"
+                  maxlength="80">
+                <div class="mt-1.5 flex items-center gap-2">
+                  <div class="h-1 rounded-full bg-white/10 flex-1"><div id="title-bar" class="h-1 rounded-full bg-green-500 transition-all" style="width:0"></div></div>
+                  <span class="text-xs text-white/30">Оптим.: 50–70 символов</span>
+                </div>
+              </div>
+
+              <div>
+                <label>
+                  Description (описание)
+                  <span id="desc-count" class="text-white/30 ml-2 font-mono"></span>
+                </label>
+                <textarea name="description" id="seo-desc" rows="3"
+                  placeholder="Лицензированная охранная компания в СПб. Вооружённая и невооружённая охрана объектов. Звоните: +7 (931) 362-56-88"
+                  maxlength="200">{{.HomeSEO.Description}}</textarea>
+                <div class="mt-1.5 flex items-center gap-2">
+                  <div class="h-1 rounded-full bg-white/10 flex-1"><div id="desc-bar" class="h-1 rounded-full bg-green-500 transition-all" style="width:0"></div></div>
+                  <span class="text-xs text-white/30">Оптим.: 120–160 символов</span>
+                </div>
+              </div>
+
+              <div>
+                <label>OG Image URL (изображение для соцсетей)</label>
+                <input type="text" name="og_image" value="{{.HomeSEO.OGImage}}"
+                  placeholder="https://alfaunit1.ru/static/images/og-cover.jpg">
+                <p class="text-white/30 text-xs mt-1">Рекомендуемый размер: 1200×630 пикселей.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview -->
+          <div class="glass border border-white/10 rounded-2xl p-6 mb-5">
+            <h3 class="text-sm font-semibold text-white/70 mb-4">Предпросмотр в поиске</h3>
+            <div class="bg-white rounded-xl p-5 text-gray-900 font-sans">
+              <div class="text-xs text-green-700 mb-0.5">alfaunit1.ru</div>
+              <div id="preview-title" class="text-blue-700 text-base font-medium leading-snug hover:underline cursor-pointer mb-1">
+                {{if .HomeSEO.Title}}{{.HomeSEO.Title}}{{else}}Альфа Юнит-1 — Охранная компания в Санкт-Петербурге{{end}}
+              </div>
+              <div id="preview-desc" class="text-sm text-gray-600 leading-relaxed">
+                {{if .HomeSEO.Description}}{{.HomeSEO.Description}}{{else}}Описание не задано.{{end}}
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="bg-gold hover:bg-yellow-500 text-black font-bold px-7 py-3 rounded-xl transition-colors">
+            Сохранить meta-теги
+          </button>
+        </form>
+      </div>
+
+      <!-- ── Tab: robots.txt ────────────────────────────── -->
+      <div class="tab-panel" id="tab-robots">
+        <form method="POST" action="/admin/seo">
+          <input type="hidden" name="slug" value="/">
+          <input type="hidden" name="title" value="{{.HomeSEO.Title}}">
+          <input type="hidden" name="description" value="{{.HomeSEO.Description}}">
+
+          <div class="glass border border-white/10 rounded-2xl p-6 mb-5">
+            <h2 class="font-semibold text-base mb-1 text-gold">Редактор robots.txt</h2>
+            <p class="text-white/40 text-xs mb-5">Первый файл, который читает поисковый бот. Ошибки — самая частая причина проблем с индексацией.</p>
+            <textarea name="robots_txt" rows="12" class="font-mono text-sm" spellcheck="false">{{.Robots}}</textarea>
+            <div class="mt-4 p-4 rounded-xl bg-accent-blue/10 border border-accent-blue/20 text-xs text-white/60 leading-relaxed">
+              <strong class="text-accent-blue">Важно (2026):</strong> Не закрывайте CSS и JS-файлы — иначе Googlebot рендерит сайт как сломанный. Убедитесь, что путь к <code class="text-gold font-mono">Sitemap:</code> указан верно.
+            </div>
+          </div>
+
+          <!-- Quick templates -->
+          <div class="mb-5">
+            <p class="text-sm text-white/50 mb-3">Быстрые шаблоны:</p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="setRobots('standard')" class="text-xs bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg transition-colors">Стандартный</button>
+              <button type="button" onclick="setRobots('open')" class="text-xs bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg transition-colors">Полностью открытый</button>
+              <button type="button" onclick="window.open('/robots.txt','_blank')" class="text-xs bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg transition-colors">Просмотреть текущий ↗</button>
+            </div>
+          </div>
+
+          <button type="submit" class="bg-gold hover:bg-yellow-500 text-black font-bold px-7 py-3 rounded-xl transition-colors">
+            Сохранить robots.txt
+          </button>
+        </form>
+      </div>
+
+      <!-- ── Tab: Schema.org ────────────────────────────── -->
+      <div class="tab-panel" id="tab-schema">
+        <form method="POST" action="/admin/seo">
+          <input type="hidden" name="slug" value="/">
+          <input type="hidden" name="title" value="{{.HomeSEO.Title}}">
+          <input type="hidden" name="description" value="{{.HomeSEO.Description}}">
+
+          <div class="glass border border-white/10 rounded-2xl p-6 mb-5">
+            <h2 class="font-semibold text-base mb-1 text-gold">Schema.org JSON-LD</h2>
+            <p class="text-white/40 text-xs mb-5">Структурированные данные для расширенных сниппетов в Google и Яндекс (+15-30% CTR).</p>
+            <textarea name="schema_json" rows="18" class="font-mono text-xs" spellcheck="false">{{.HomeSEO.SchemaJSON}}</textarea>
+          </div>
+
+          <!-- Schema types explanation -->
+          <div class="grid sm:grid-cols-2 gap-4 mb-5">
+            <div class="glass border border-white/10 rounded-xl p-4">
+              <div class="text-xs font-semibold text-gold mb-2">LocalBusiness ✓ (встроен)</div>
+              <p class="text-white/40 text-xs leading-relaxed">Компания, адрес, телефон, часы работы. Показывается в блоке с картой в Google.</p>
+            </div>
+            <div class="glass border border-white/10 rounded-xl p-4">
+              <div class="text-xs font-semibold text-white/50 mb-2">FAQPage (рекомендуем добавить)</div>
+              <p class="text-white/40 text-xs leading-relaxed">FAQ-вопросы отображаются прямо в результатах поиска — занимают в 3× больше места.</p>
+            </div>
+            <div class="glass border border-white/10 rounded-xl p-4">
+              <div class="text-xs font-semibold text-white/50 mb-2">Service</div>
+              <p class="text-white/40 text-xs leading-relaxed">Описание каждой услуги для поисковых систем.</p>
+            </div>
+            <div class="glass border border-white/10 rounded-xl p-4">
+              <div class="text-xs font-semibold text-white/50 mb-2">BreadcrumbList</div>
+              <p class="text-white/40 text-xs leading-relaxed">Хлебные крошки в результатах поиска — улучшают навигацию.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-3 flex-wrap">
+            <button type="submit" class="bg-gold hover:bg-yellow-500 text-black font-bold px-7 py-3 rounded-xl transition-colors">
+              Сохранить Schema.org
+            </button>
+            <a href="https://validator.schema.org/" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/15 px-5 py-3 rounded-xl text-sm transition-colors">
+              Проверить валидность ↗
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <!-- ── Tab: Sitemap ───────────────────────────────── -->
+      <div class="tab-panel" id="tab-sitemap">
+        <div class="glass border border-white/10 rounded-2xl p-6 mb-5">
+          <h2 class="font-semibold text-base mb-1 text-gold">Sitemap.xml</h2>
+          <p class="text-white/40 text-xs mb-6">Карта сайта генерируется автоматически сервером Go при каждом запросе к /sitemap.xml.</p>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div>
+                  <div class="text-sm font-semibold text-green-400">Sitemap активен</div>
+                  <div class="text-xs text-white/40 mt-0.5">Доступен по адресу /sitemap.xml</div>
+                </div>
+              </div>
+              <a href="/sitemap.xml" target="_blank" class="text-xs text-green-400 hover:underline">Открыть ↗</a>
+            </div>
+
+            <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+              <h3 class="text-sm font-semibold mb-4">Включённые URL</h3>
+              <div class="space-y-2 text-sm font-mono text-white/60">
+                <div class="flex justify-between"><span>/</span><span class="text-xs text-white/30">priority: 1.0</span></div>
+                <div class="flex justify-between"><span>/#services</span><span class="text-xs text-white/30">priority: 0.9</span></div>
+                <div class="flex justify-between"><span>/#about</span><span class="text-xs text-white/30">priority: 0.8</span></div>
+                <div class="flex justify-between"><span>/#contacts</span><span class="text-xs text-white/30">priority: 0.8</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass border border-gold/20 rounded-2xl p-6">
+          <h3 class="font-semibold text-sm mb-4">Отправить Sitemap в поисковики</h3>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
+              <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 text-sm font-bold text-blue-600">G</div>
+              <div>
+                <div class="text-sm font-semibold">Google Search Console</div>
+                <div class="text-xs text-white/40">Добавить sitemap.xml</div>
+              </div>
+            </a>
+            <a href="https://webmaster.yandex.ru/" target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
+              <div class="w-9 h-9 rounded-lg bg-red-600 flex items-center justify-center shrink-0 text-sm font-bold text-white">Я</div>
+              <div>
+                <div class="text-sm font-semibold">Яндекс Вебмастер</div>
+                <div class="text-xs text-white/40">Добавить sitemap.xml</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Tab: Checklist ─────────────────────────────── -->
+      <div class="tab-panel" id="tab-checklist">
+        <div class="glass border border-white/10 rounded-2xl p-6 mb-5">
+          <h2 class="font-semibold text-base mb-1 text-gold">SEO-чеклист 2026</h2>
+          <p class="text-white/40 text-xs mb-6">Технические требования Google и Яндекс. Отмечайте выполненные пункты.</p>
+
+          <div class="space-y-1" id="checklist">
+
+            <!-- Core Web Vitals -->
+            <div class="text-xs font-semibold text-white/35 uppercase tracking-widest px-3 py-2 mt-4 mb-1">Core Web Vitals (Google + Яндекс)</div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">LCP ≤ 2.5 сек</div><div class="text-xs text-white/40 mt-0.5">Go SSR обеспечивает TTFB ~30ms — LCP будет отличным автоматически.</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">INP ≤ 200 мс (заменил FID с марта 2024)</div><div class="text-xs text-white/40 mt-0.5">Минимум тяжёлого JS. Все обработчики лёгкие — требование выполнено.</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">CLS ≤ 0.1</div><div class="text-xs text-white/40 mt-0.5">Фиксированные размеры всех блоков — нет сдвигов при загрузке.</div></div>
+            </div>
+
+            <!-- Indexation -->
+            <div class="text-xs font-semibold text-white/35 uppercase tracking-widest px-3 py-2 mt-4 mb-1">Индексация и структура</div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">robots.txt настроен и доступен по /robots.txt</div><div class="text-xs text-white/40 mt-0.5">Серверный маршрут зарегистрирован, редактируется выше.</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">Sitemap.xml генерируется автоматически</div><div class="text-xs text-white/40 mt-0.5">Доступен по /sitemap.xml, включает все страницы с lastmod.</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">Schema.org LocalBusiness встроена</div><div class="text-xs text-white/40 mt-0.5">JSON-LD с данными компании добавлен в &lt;head&gt; автоматически.</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">Meta title и description заданы</div><div class="text-xs text-white/40 mt-0.5">Заполнить выше во вкладке "Meta-теги".</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">Canonical URLs заданы</div><div class="text-xs text-white/40 mt-0.5">Тег &lt;link rel="canonical"&gt; автоматически добавляется на каждую страницу.</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">Open Graph теги для соцсетей</div><div class="text-xs text-white/40 mt-0.5">og:title, og:description, og:url, og:locale встроены в шаблон.</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">Мобильная адаптивность (viewport meta)</div><div class="text-xs text-white/40 mt-0.5">Responsive design на Tailwind CSS. Все экраны: 320px до 4K.</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <div class="check-badge check-done"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+              <div><div class="text-sm font-medium">Семантический HTML (h1–h3, nav, main, section)</div><div class="text-xs text-white/40 mt-0.5">Правильная иерархия заголовков и роли для доступности.</div></div>
+            </div>
+
+            <!-- Manual actions -->
+            <div class="text-xs font-semibold text-white/35 uppercase tracking-widest px-3 py-2 mt-4 mb-1">Требует ручных действий</div>
+
+            <div class="checklist-item">
+              <label class="check-badge check-todo cursor-pointer"><input type="checkbox" class="hidden" onchange="toggleCheck(this)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></label>
+              <div><div class="text-sm font-medium">Добавить сайт в Google Search Console</div><div class="text-xs text-white/40 mt-0.5"><a href="https://search.google.com/search-console" target="_blank" class="text-gold hover:underline">search.google.com/search-console ↗</a> → Добавить ресурс → Отправить sitemap.xml</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <label class="check-badge check-todo cursor-pointer"><input type="checkbox" class="hidden" onchange="toggleCheck(this)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></label>
+              <div><div class="text-sm font-medium">Добавить сайт в Яндекс Вебмастер</div><div class="text-xs text-white/40 mt-0.5"><a href="https://webmaster.yandex.ru/" target="_blank" class="text-gold hover:underline">webmaster.yandex.ru ↗</a> → Добавить сайт → Настроить регион «Санкт-Петербург»</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <label class="check-badge check-todo cursor-pointer"><input type="checkbox" class="hidden" onchange="toggleCheck(this)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></label>
+              <div><div class="text-sm font-medium">Установить HTTPS / SSL-сертификат</div><div class="text-xs text-white/40 mt-0.5">Let's Encrypt через Certbot. Инструкция в docs/SCRIPTS.md</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <label class="check-badge check-todo cursor-pointer"><input type="checkbox" class="hidden" onchange="toggleCheck(this)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></label>
+              <div><div class="text-sm font-medium">Создать карточку в Яндекс.Справочнике</div><div class="text-xs text-white/40 mt-0.5"><a href="https://sprav.yandex.ru/" target="_blank" class="text-gold hover:underline">sprav.yandex.ru ↗</a> — локальное SEO, отзывы, карта</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <label class="check-badge check-todo cursor-pointer"><input type="checkbox" class="hidden" onchange="toggleCheck(this)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></label>
+              <div><div class="text-sm font-medium">Создать профиль Google Business</div><div class="text-xs text-white/40 mt-0.5"><a href="https://business.google.com/" target="_blank" class="text-gold hover:underline">business.google.com ↗</a> — отображение на Google Maps</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <label class="check-badge check-todo cursor-pointer"><input type="checkbox" class="hidden" onchange="toggleCheck(this)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></label>
+              <div><div class="text-sm font-medium">Установить Яндекс.Метрику</div><div class="text-xs text-white/40 mt-0.5">Добавить счётчик в шаблон. Настроить цели: форма, звонок, WhatsApp.</div></div>
+            </div>
+
+            <div class="checklist-item">
+              <label class="check-badge check-todo cursor-pointer"><input type="checkbox" class="hidden" onchange="toggleCheck(this)"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg></label>
+              <div><div class="text-sm font-medium">Зарегистрировать в 2GIS</div><div class="text-xs text-white/40 mt-0.5">2GIS — обязателен для СПб. Бесплатно, влияет на локальную выдачу.</div></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Tab: External Tools ────────────────────────── -->
+      <div class="tab-panel" id="tab-tools">
+        <div class="glass border border-white/10 rounded-2xl p-6 mb-5">
+          <h2 class="font-semibold text-base mb-1 text-gold">Внешние SEO-инструменты</h2>
+          <p class="text-white/40 text-xs mb-6">Сервисы для мониторинга позиций, аудита и аналитики — актуальны для 2026 года.</p>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+
+            <a href="https://pagespeed.web.dev/" target="_blank" rel="noopener noreferrer"
+               class="flex items-start gap-4 p-5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-gold/30 transition-all group">
+              <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center shrink-0 text-white font-bold text-sm">PS</div>
+              <div>
+                <div class="font-semibold text-sm group-hover:text-gold transition-colors">PageSpeed Insights</div>
+                <div class="text-xs text-white/40 mt-0.5">Core Web Vitals, рекомендации по скорости</div>
+              </div>
+            </a>
+
+            <a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer"
+               class="flex items-start gap-4 p-5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-gold/30 transition-all group">
+              <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 text-blue-600 font-bold text-sm">G</div>
+              <div>
+                <div class="font-semibold text-sm group-hover:text-gold transition-colors">Google Search Console</div>
+                <div class="text-xs text-white/40 mt-0.5">Индексация, позиции, ошибки сканирования</div>
+              </div>
+            </a>
+
+            <a href="https://webmaster.yandex.ru/" target="_blank" rel="noopener noreferrer"
+               class="flex items-start gap-4 p-5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-gold/30 transition-all group">
+              <div class="w-10 h-10 rounded-lg bg-red-600 flex items-center justify-center shrink-0 text-white font-bold text-sm">Я</div>
+              <div>
+                <div class="font-semibold text-sm group-hover:text-gold transition-colors">Яндекс Вебмастер</div>
+                <div class="text-xs text-white/40 mt-0.5">Индексация в Яндексе, региональность</div>
+              </div>
+            </a>
+
+            <a href="https://metrika.yandex.ru/" target="_blank" rel="noopener noreferrer"
+               class="flex items-start gap-4 p-5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-gold/30 transition-all group">
+              <div class="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center shrink-0 text-white font-bold text-xs">МТ</div>
+              <div>
+                <div class="font-semibold text-sm group-hover:text-gold transition-colors">Яндекс Метрика</div>
+                <div class="text-xs text-white/40 mt-0.5">Аналитика трафика, цели, вебвизор</div>
+              </div>
+            </a>
+
+            <a href="https://validator.schema.org/" target="_blank" rel="noopener noreferrer"
+               class="flex items-start gap-4 p-5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-gold/30 transition-all group">
+              <div class="w-10 h-10 rounded-lg bg-purple-600 flex items-center justify-center shrink-0 text-white font-bold text-xs">SD</div>
+              <div>
+                <div class="font-semibold text-sm group-hover:text-gold transition-colors">Schema.org Validator</div>
+                <div class="text-xs text-white/40 mt-0.5">Проверка структурированных данных</div>
+              </div>
+            </a>
+
+            <a href="https://sprav.yandex.ru/" target="_blank" rel="noopener noreferrer"
+               class="flex items-start gap-4 p-5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-gold/30 transition-all group">
+              <div class="w-10 h-10 rounded-lg bg-yellow-500 flex items-center justify-center shrink-0 text-black font-bold text-xs">2ГИС</div>
+              <div>
+                <div class="font-semibold text-sm group-hover:text-gold transition-colors">Яндекс.Справочник</div>
+                <div class="text-xs text-white/40 mt-0.5">Карточка компании на Яндекс.Картах</div>
+              </div>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- GEO tip -->
+        <div class="glass border border-accent-blue/20 rounded-2xl p-6">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-xl bg-accent-blue/20 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/></svg>
+            </div>
+            <div>
+              <div class="font-semibold text-sm mb-2 text-accent-blue">GEO — Generative Engine Optimization (2026)</div>
+              <p class="text-white/50 text-xs leading-relaxed">В 2026 году ~18% коммерческих поисковых запросов генерируют AI-ответы (Google AI Overview, Perplexity, ChatGPT). Для попадания в них: используйте структурированные данные Schema.org, пишите контент в формате «вопрос-ответ» (BLUF), обеспечьте server-side rendering без зависимости от JavaScript — ваш сайт уже соответствует этим требованиям благодаря Go SSR.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Character counters for meta fields
+    function updateCounter(input, countEl, barEl, min, max) {
+      const len = input.value.length;
+      countEl.textContent = len + ' / ' + max;
+      const pct = Math.min((len / max) * 100, 100);
+      barEl.style.width = pct + '%';
+      barEl.className = 'h-1 rounded-full transition-all ' +
+        (len < min ? 'bg-yellow-500' : len <= max ? 'bg-green-500' : 'bg-red-500');
+    }
+
+    const titleInput = document.getElementById('seo-title');
+    const descInput = document.getElementById('seo-desc');
+    if (titleInput) {
+      titleInput.addEventListener('input', () => {
+        updateCounter(titleInput, document.getElementById('title-count'), document.getElementById('title-bar'), 50, 70);
+        document.getElementById('preview-title').textContent = titleInput.value || 'Заголовок страницы';
+      });
+      titleInput.dispatchEvent(new Event('input'));
+    }
+    if (descInput) {
+      descInput.addEventListener('input', () => {
+        updateCounter(descInput, document.getElementById('desc-count'), document.getElementById('desc-bar'), 120, 160);
+        document.getElementById('preview-desc').textContent = descInput.value || 'Описание страницы.';
+      });
+      descInput.dispatchEvent(new Event('input'));
+    }
+
+    // robots.txt templates
+    function setRobots(type) {
+      const el = document.querySelector('[name="robots_txt"]');
+      if (!el) return;
+      if (type === 'standard') {
+        el.value = `User-agent: *\nAllow: /\nDisallow: /admin/\n\n# Разрешить Google\nUser-agent: Googlebot\nAllow: /\n\n# Разрешить Яндекс\nUser-agent: YandexBot\nAllow: /\n\n# Блокировать AI-скрейперы (не нужные для поиска)\nUser-agent: GPTBot\nDisallow: /\n\nSitemap: /sitemap.xml`;
+      } else {
+        el.value = `User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: /sitemap.xml`;
+      }
+    }
+
+    // Checklist toggle
+    function toggleCheck(checkbox) {
+      const badge = checkbox.parentElement;
+      const checked = checkbox.checked;
+      badge.className = 'check-badge ' + (checked ? 'check-done' : 'check-todo') + ' cursor-pointer';
+    }
+  </script>
+</body>
+</html>

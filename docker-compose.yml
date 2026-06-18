@@ -1,0 +1,94 @@
+# ═══════════════════════════════════════════════════════════════
+# Альфа Юнит-1 — Docker Compose
+# Запуск: docker-compose up -d
+# Остановка: docker-compose down
+# ═══════════════════════════════════════════════════════════════
+
+version: '3.9'
+
+services:
+
+  # ── Go application ───────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alfa1_app
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - PORT=8080
+      - DB_PATH=/app/data/alfa1.db
+      - APP_ENV=production
+    volumes:
+      # Persist SQLite database between container restarts
+      - alfa1_data:/app/data
+    ports:
+      # Expose only to nginx (or directly if no nginx)
+      - "127.0.0.1:8080:8080"
+    networks:
+      - alfa1_net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── Nginx reverse proxy (HTTPS, static caching) ──────────────
+  nginx:
+    image: nginx:alpine
+    container_name: alfa1_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # SSL certificates — mount from host after running certbot:
+      # sudo certbot certonly --standalone -d alfaunit1.ru -d www.alfaunit1.ru
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Certbot webroot challenge
+      - certbot_webroot:/var/www/certbot:ro
+    depends_on:
+      - app
+    networks:
+      - alfa1_net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+  # ── Certbot — auto-renew SSL (optional) ──────────────────────
+  certbot:
+    image: certbot/certbot:latest
+    container_name: alfa1_certbot
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
+    entrypoint: >
+      /bin/sh -c "trap exit TERM;
+      while :; do
+        certbot renew --webroot -w /var/www/certbot --quiet;
+        sleep 12h;
+      done"
+    profiles:
+      - ssl  # Only starts with: docker-compose --profile ssl up -d
+
+volumes:
+  alfa1_data:
+    name: alfa1_data
+  certbot_webroot:
+    name: alfa1_certbot_webroot
+
+networks:
+  alfa1_net:
+    name: alfa1_network
+    driver: bridge
