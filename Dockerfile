@@ -5,7 +5,7 @@
 # ═══════════════════════════════════════════════════════════════
 
 # ── Stage 1: Builder ─────────────────────────────────────────
-FROM golang:1.22-alpine AS builder
+FROM golang:alpine AS builder
 
 # Install build tools (needed for modernc.org/sqlite pure Go build)
 RUN apk add --no-cache git ca-certificates tzdata
