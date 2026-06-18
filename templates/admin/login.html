@@ -1,67 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — Вход | Альфа Юнит-1</title>
-  <meta name="robots" content="noindex, nofollow">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: { extend: {
-        colors: { 'bg-primary': '#05070A', 'bg-secondary': '#0B111B', 'gold': '#D4AF37' }
-      }}
-    }
-  </script>
-  <style>
-    .glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); }
-    input { background: rgba(255,255,255,0.06) !important; }
-    input:focus { outline: none; border-color: #D4AF37 !important; box-shadow: 0 0 0 2px rgba(212,175,55,0.2) !important; }
-  </style>
-</head>
-<body class="bg-bg-primary text-white min-h-screen flex items-center justify-center">
-  <div class="w-full max-w-sm px-4">
-
-    <!-- Logo -->
-    <div class="text-center mb-8">
-      <div class="w-14 h-14 rounded-2xl bg-gold flex items-center justify-center mx-auto mb-4">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L3 7V12C3 17.25 6.96 22.18 12 23.5C17.04 22.18 21 17.25 21 12V7L12 2Z" fill="#05070A"/>
-          <path d="M9 12L11 14L15 10" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <h1 class="text-xl font-bold tracking-wide">АЛЬФА ЮНИТ-1</h1>
-      <p class="text-white/40 text-sm mt-1">Панель управления</p>
-    </div>
-
-    <!-- Card -->
-    <div class="glass border border-white/10 rounded-2xl p-8">
-      <h2 class="text-lg font-semibold mb-6">Вход в систему</h2>
-
-      {{if .Error}}
-      <div class="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-        {{.Error}}
-      </div>
-      {{end}}
-
-      <form method="POST" action="/admin/login">
-        <div class="mb-5">
-          <label class="block text-sm text-white/60 mb-2" for="password">Пароль администратора</label>
-          <input
-            id="password" name="password" type="password"
-            class="w-full border border-white/20 rounded-xl px-4 py-3 text-white text-sm transition-all"
-            placeholder="Введите пароль" autofocus autocomplete="current-password" required>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Вход | Альфа Юнит-1</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { "bg-primary": "#05070A", "bg-secondary": "#0B111B", gold: "#D4AF37" },
+          },
+        },
+      };
+    </script>
+    <style>
+      .glass {
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(12px);
+      }
+      input {
+        background: rgba(255, 255, 255, 0.06) !important;
+      }
+      input:focus {
+        outline: none;
+        border-color: #d4af37 !important;
+        box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2) !important;
+      }
+    </style>
+  </head>
+  <body class="bg-bg-primary text-white min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-sm px-4">
+      <!-- Logo -->
+      <div class="text-center mb-8">
+        <div class="w-14 h-14 rounded-2xl bg-gold flex items-center justify-center mx-auto mb-4">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 2L3 7V12C3 17.25 6.96 22.18 12 23.5C17.04 22.18 21 17.25 21 12V7L12 2Z"
+              fill="#05070A"
+            />
+            <path
+              d="M9 12L11 14L15 10"
+              stroke="#D4AF37"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         </div>
-        <button type="submit"
-          class="w-full bg-gold hover:bg-yellow-500 text-black font-bold py-3 rounded-xl transition-colors">
-          Войти
-        </button>
-      </form>
-    </div>
+        <h1 class="text-xl font-bold tracking-wide">АЛЬФА ЮНИТ-1</h1>
+        <p class="text-white/40 text-sm mt-1">Панель управления</p>
+      </div>
 
-    <p class="text-center text-white/25 text-xs mt-6">
-      <a href="/" class="hover:text-white/50 transition-colors">← На сайт</a>
-    </p>
-  </div>
-</body>
+      <!-- Card -->
+      <div class="glass border border-white/10 rounded-2xl p-8">
+        <h2 class="text-lg font-semibold mb-6">Вход в систему</h2>
+
+        {{if .Error}}
+        <div
+          class="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm"
+        >
+          {{.Error}}
+        </div>
+        {{end}}
+
+        <form method="POST" action="/admin/login">
+          <div class="mb-5">
+            <label class="block text-sm text-white/60 mb-2" for="password"
+              >Пароль администратора</label
+            >
+            <input
+              id="password"
+              name="password"
+              type="password"
+              class="w-full border border-white/20 rounded-xl px-4 py-3 text-white text-sm transition-all"
+              placeholder="Введите пароль"
+              autofocus
+              autocomplete="current-password"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-gold hover:bg-yellow-500 text-black font-bold py-3 rounded-xl transition-colors"
+          >
+            Войти
+          </button>
+        </form>
+      </div>
+
+      <p class="text-center text-white/25 text-xs mt-6">
+        <a href="/" class="hover:text-white/50 transition-colors">← На сайт</a>
+      </p>
+    </div>
+  </body>
 </html>

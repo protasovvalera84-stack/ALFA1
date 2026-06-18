@@ -19,36 +19,42 @@
 
 ## Сессия 1 — Июнь 2026
 
-*(Ошибки будут добавляться по мере разработки)*
+_(Ошибки будут добавляться по мере разработки)_
 
 ---
 
 ## Типичные ошибки Go и их решения
 
 ### Go: undefined: embed.FS
+
 **Причина:** пакет `embed` не импортирован или используется Go < 1.16
 **Исправление:** добавить `import _ "embed"` и убедиться в `go.mod`: `go 1.22`
 
 ### SQLite: CGO required
+
 **Причина:** использование `mattn/go-sqlite3` требует CGO
 **Исправление:** использовать `modernc.org/sqlite` — чистый Go, не требует CGO
 
 ### Templates: template not found
+
 **Причина:** неверный путь к шаблону или не вызван ParseFS
 **Исправление:** проверить путь, убедиться что embed включает папку templates
 
 ### Docker: binary not executable
+
 **Причина:** неверные права на бинарник в multi-stage сборке
 **Исправление:** добавить `RUN chmod +x /app/alfa1` в Dockerfile
 
 ### Admin: session not persisting
+
 **Причина:** cookie без флага HttpOnly или SameSite
 **Исправление:** установить `HttpOnly: true, SameSite: http.SameSiteLaxMode`
 
 ### SEO: sitemap возвращает 404
+
 **Причина:** маршрут `/sitemap.xml` не зарегистрирован в mux
 **Исправление:** добавить `mux.HandleFunc("/sitemap.xml", handlers.Sitemap)`
 
 ---
 
-*Файл обновляется при каждом исправлении ошибки.*
+_Файл обновляется при каждом исправлении ошибки._

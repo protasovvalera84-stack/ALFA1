@@ -4,10 +4,9 @@
 # Остановка: docker-compose down
 # ═══════════════════════════════════════════════════════════════
 
-version: '3.9'
+version: "3.9"
 
 services:
-
   # ── Go application ───────────────────────────────────────────
   app:
     build:
@@ -80,7 +79,7 @@ services:
         sleep 12h;
       done"
     profiles:
-      - ssl  # Only starts with: docker-compose --profile ssl up -d
+      - ssl # Only starts with: docker-compose --profile ssl up -d
 
 volumes:
   alfa1_data:

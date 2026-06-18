@@ -5,6 +5,7 @@
 **Альфа Юнит-1** — корпоративный сайт охранной компании, реализованный в виде Go-веб-приложения с встроенной системой управления контентом (CMS) и SEO-инструментами.
 
 **Ключевые принципы:**
+
 - Один бинарный файл Go — никаких внешних рантаймов
 - SQLite — никаких отдельных серверов баз данных
 - Docker — одна команда для запуска на любом сервере
@@ -37,6 +38,7 @@ main.go → mux.ServeHTTP()
 ## Структура базы данных
 
 ### Таблица `settings`
+
 ```sql
 CREATE TABLE settings (
     key   TEXT PRIMARY KEY,
@@ -47,6 +49,7 @@ CREATE TABLE settings (
 ```
 
 ### Таблица `services`
+
 ```sql
 CREATE TABLE services (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,6 +62,7 @@ CREATE TABLE services (
 ```
 
 ### Таблица `seo_pages`
+
 ```sql
 CREATE TABLE seo_pages (
     slug        TEXT PRIMARY KEY,  -- '/', '/services', etc.
@@ -70,6 +74,7 @@ CREATE TABLE seo_pages (
 ```
 
 ### Таблица `contacts`
+
 ```sql
 CREATE TABLE contacts (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -84,6 +89,7 @@ CREATE TABLE contacts (
 ```
 
 ### Таблица `sessions`
+
 ```sql
 CREATE TABLE sessions (
     token      TEXT PRIMARY KEY,
@@ -98,31 +104,32 @@ CREATE TABLE sessions (
 
 ### Публичные
 
-| Метод | URL | Описание |
-|-------|-----|----------|
-| GET | `/` | Главная страница |
-| POST | `/contact` | Отправка формы (JSON) |
-| GET | `/sitemap.xml` | Карта сайта XML |
-| GET | `/robots.txt` | Правила для ботов |
-| GET | `/static/*` | Статические файлы |
+| Метод | URL            | Описание              |
+| ----- | -------------- | --------------------- |
+| GET   | `/`            | Главная страница      |
+| POST  | `/contact`     | Отправка формы (JSON) |
+| GET   | `/sitemap.xml` | Карта сайта XML       |
+| GET   | `/robots.txt`  | Правила для ботов     |
+| GET   | `/static/*`    | Статические файлы     |
 
 ### Admin (требует авторизации)
 
-| Метод | URL | Описание |
-|-------|-----|----------|
-| GET/POST | `/admin/login` | Авторизация |
-| GET | `/admin/` | Dashboard |
-| GET/POST | `/admin/settings` | Настройки сайта |
+| Метод    | URL               | Описание            |
+| -------- | ----------------- | ------------------- |
+| GET/POST | `/admin/login`    | Авторизация         |
+| GET      | `/admin/`         | Dashboard           |
+| GET/POST | `/admin/settings` | Настройки сайта     |
 | GET/POST | `/admin/services` | Управление услугами |
-| GET | `/admin/contacts` | Заявки с формы |
-| GET/POST | `/admin/seo` | SEO настройки |
-| GET | `/admin/logout` | Выход |
+| GET      | `/admin/contacts` | Заявки с формы      |
+| GET/POST | `/admin/seo`      | SEO настройки       |
+| GET      | `/admin/logout`   | Выход               |
 
 ---
 
 ## Компоненты frontend
 
 ### CSS (static/css/style.css)
+
 ```
 :root
   └── CSS переменные (цвета, шрифты, отступы)
@@ -141,6 +148,7 @@ CREATE TABLE sessions (
 ```
 
 ### JavaScript (static/js/main.js)
+
 ```
 Modules:
 ├── initLenis()          → плавный скролл
@@ -178,6 +186,7 @@ SESSION_SECRET=your-very-long-random-secret-key-here
 ## Безопасность
 
 ### Авторизация admin
+
 1. Пользователь вводит пароль
 2. Go сравнивает с bcrypt-хешем в БД (`bcrypt.CompareHashAndPassword`)
 3. При успехе — создаётся UUID токен сессии в таблице `sessions`
@@ -185,11 +194,13 @@ SESSION_SECRET=your-very-long-random-secret-key-here
 5. Каждый запрос к `/admin/*` — проверка токена в БД
 
 ### Защита форм
+
 - CSRF-токен в скрытом поле
 - Rate limiting: максимум 5 отправок в минуту с одного IP
 - Валидация и санитизация всех входных данных
 
 ### HTTP заголовки безопасности
+
 ```
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
@@ -202,18 +213,19 @@ Content-Security-Policy: default-src 'self'; ...
 
 ## Адаптивность (Responsive Design)
 
-| Устройство | Ширина | Поведение |
-|-----------|--------|-----------|
-| Мобильный | < 640px | 1 колонка, меню-бургер |
-| Планшет | 640–1024px | 2 колонки |
-| ПК | 1024–1440px | 3 колонки |
-| ТВ/широкий | > 1440px | 4 колонки, max-width: 1400px |
+| Устройство | Ширина      | Поведение                    |
+| ---------- | ----------- | ---------------------------- |
+| Мобильный  | < 640px     | 1 колонка, меню-бургер       |
+| Планшет    | 640–1024px  | 2 колонки                    |
+| ПК         | 1024–1440px | 3 колонки                    |
+| ТВ/широкий | > 1440px    | 4 колонки, max-width: 1400px |
 
 ---
 
 ## SEO-алгоритм
 
 При каждом запросе страницы:
+
 1. Загрузить SEO-настройки для URL из `seo_pages`
 2. Вставить `<title>`, `<meta description>`, OG-теги в `<head>`
 3. Вставить Schema.org JSON-LD из `schema_json`
@@ -221,6 +233,7 @@ Content-Security-Policy: default-src 'self'; ...
 5. Вставить hreflang (если есть мультиязычность)
 
 Sitemap генерируется динамически:
+
 ```go
 // При GET /sitemap.xml
 w.Header().Set("Content-Type", "application/xml")
@@ -232,12 +245,14 @@ tmpl.Execute(w, pages) // pages из БД + статические URL
 ## Производительность
 
 **Почему Go быстрее Node.js/PHP для этого сайта:**
+
 - Компилируемый язык — нет интерпретации
 - Конкурентная обработка запросов (goroutines)
 - Server-side rendering — браузер получает готовый HTML
 - Нет тяжёлого JS-фреймворка на клиенте
 
 **Оценочные показатели на VPS 1 CPU / 1GB RAM:**
+
 - TTFB: ~15-30 мс
 - 1000+ одновременных пользователей без замедления
 - Потребление памяти: ~30-50 MB
@@ -260,4 +275,4 @@ docker-compose restart
 
 ---
 
-*Документация актуальна на момент создания сайта — Июнь 2026.*
+_Документация актуальна на момент создания сайта — Июнь 2026._
