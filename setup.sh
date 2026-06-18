@@ -1,134 +1,129 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════
-# Альфа Юнит-1 — автоматический скрипт установки
-# Проверено: Ubuntu 22.04 / 24.04 LTS
-# Использование: sudo ./setup.sh
+# Альфа Юнит-1 — полностью автоматическая установка
+#
+# Запуск (одна команда):
+#   bash <(curl -fsSL https://raw.githubusercontent.com/protasovvalera84-stack/ALFA1/main/setup.sh)
+#
+# Или из папки с репозиторием:
+#   sudo bash setup.sh
 # ═══════════════════════════════════════════════════════════════
 set -eu
 
-# ── Цвета ────────────────────────────────────────────────────
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
+GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'
+CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
-info()    { echo -e "${BLUE}[INFO]${NC}  $*"; }
-success() { echo -e "${GREEN}[OK]${NC}    $*"; }
-warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
-step()    { echo -e "\n${CYAN}${BOLD}▶ $*${NC}"; }
+ok()   { echo -e "${GREEN}[OK]${NC}  $*"; }
+info() { echo -e "${BLUE}[..]${NC}  $*"; }
+step() { echo -e "\n${CYAN}${BOLD}▶ $*${NC}"; }
 
 echo ""
-echo -e "${BOLD}${BLUE}════════════════════════════════════════════════════${NC}"
-echo -e "${BOLD}${BLUE}   Альфа Юнит-1 — автоматическая установка сайта   ${NC}"
-echo -e "${BOLD}${BLUE}════════════════════════════════════════════════════${NC}"
+echo -e "${BOLD}${BLUE}══════════════════════════════════════════${NC}"
+echo -e "${BOLD}${BLUE}  Альфа Юнит-1 — установка сайта         ${NC}"
+echo -e "${BOLD}${BLUE}══════════════════════════════════════════${NC}"
 echo ""
 
-# ── 1. Проверка root ─────────────────────────────────────────
-if [ "$EUID" -ne 0 ]; then
-  echo -e "${RED}Ошибка:${NC} запустите скрипт от root: sudo ./setup.sh"
-  exit 1
-fi
+# ── Рабочая папка ───────────────────────────────────────────
+INSTALL_DIR="/root/ALFA1"
 
-# ── 2. Установка Docker (если не установлен) ─────────────────
+# ── 1. Docker ────────────────────────────────────────────────
 step "Проверка Docker..."
 
 if ! command -v docker > /dev/null 2>&1; then
-  info "Docker не найден. Устанавливаю..."
-  apt-get update -q
-  apt-get install -y -q ca-certificates curl gnupg
+  info "Устанавливаю Docker..."
+  apt-get update -qq
+  apt-get install -y -qq ca-certificates curl gnupg
   install -m 0755 -d /etc/apt/keyrings
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
     | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
   chmod a+r /etc/apt/keyrings/docker.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
-https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+  CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
+  ARCH=$(dpkg --print-architecture)
+  echo "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/docker.gpg] \
+https://download.docker.com/linux/ubuntu ${CODENAME} stable" \
     > /etc/apt/sources.list.d/docker.list
-  apt-get update -q
-  apt-get install -y -q docker-ce docker-ce-cli containerd.io \
+  apt-get update -qq
+  apt-get install -y -qq docker-ce docker-ce-cli containerd.io \
     docker-buildx-plugin docker-compose-plugin
   systemctl enable --now docker
-  success "Docker установлен"
+fi
+
+ok "Docker $(docker --version | grep -oP '[\d.]+' | head -1)"
+ok "Compose $(docker compose version --short)"
+
+# ── 2. Код ───────────────────────────────────────────────────
+step "Получение актуального кода..."
+
+if [ -d "$INSTALL_DIR/.git" ]; then
+  cd "$INSTALL_DIR"
+  git fetch origin main -q
+  git reset --hard origin/main -q
+  ok "Репозиторий обновлён"
 else
-  success "Docker найден: $(docker --version | grep -oP '\d+\.\d+\.\d+' | head -1)"
+  rm -rf "$INSTALL_DIR"
+  git clone -q https://github.com/protasovvalera84-stack/ALFA1.git "$INSTALL_DIR"
+  ok "Репозиторий загружен"
 fi
 
-if ! docker compose version > /dev/null 2>&1; then
-  apt-get install -y -q docker-compose-plugin
-fi
-success "Docker Compose: $(docker compose version --short)"
+cd "$INSTALL_DIR"
 
-# ── 3. Определить IPv4 сервера ────────────────────────────────
-step "Определение IP-адреса сервера..."
+# ── 3. IPv4 адрес ────────────────────────────────────────────
+step "Определение IP-адреса..."
 
-SERVER_IP=""
-# Пробуем получить IPv4 через несколько сервисов
-for SVC in "https://ipv4.icanhazip.com" "https://api4.ipify.org" "https://ifconfig.me/ip"; do
-  IP=$(curl -s4 --connect-timeout 4 "$SVC" 2>/dev/null || true)
-  if echo "$IP" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; then
-    SERVER_IP="$IP"
-    break
-  fi
-done
+# Получаем IPv4 через таблицу маршрутизации — надёжно, без curl
+SERVER_IP=$(ip -4 route get 1.1.1.1 2>/dev/null \
+  | awk '{for(i=1;i<=NF;i++) if($i=="src") {print $(i+1); exit}}')
 
-# Запасной вариант — локальный IP
+# Запасной вариант
 if [ -z "$SERVER_IP" ]; then
-  SERVER_IP=$(ip -4 addr show scope global | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1 || echo "localhost")
+  SERVER_IP=$(ip -4 addr show scope global \
+    | awk '/inet /{gsub(/\/.*/,"",$2); print $2; exit}')
 fi
 
-success "IP сервера: $SERVER_IP"
+[ -z "$SERVER_IP" ] && SERVER_IP="localhost"
+ok "IPv4: $SERVER_IP"
 
-# ── 4. Создание .env ─────────────────────────────────────────
-step "Создание конфигурации .env..."
+# ── 4. Конфиг .env ──────────────────────────────────────────
+step "Создание конфигурации..."
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR"
+# Генерируем пароль и секрет через openssl
+ADMIN_PASS=$(openssl rand -hex 10)
+SESSION_KEY=$(openssl rand -hex 32)
 
-NEED_CREATE=true
+# Если .env уже есть с нормальным паролем — не трогаем
 if [ -f ".env" ]; then
-  CURRENT_PASS=$(grep '^ADMIN_PASSWORD=' .env 2>/dev/null | cut -d'=' -f2- || echo "")
-  if [ -n "$CURRENT_PASS" ] && [ "$CURRENT_PASS" != "ChangeMe2026!" ] && [ "$CURRENT_PASS" != "YourStrongPasswordHere" ]; then
-    success ".env уже настроен — пересоздавать не нужно"
-    ADMIN_PASS="$CURRENT_PASS"
-    NEED_CREATE=false
+  EXISTING=$(grep '^ADMIN_PASSWORD=' .env 2>/dev/null | cut -d'=' -f2- || true)
+  if [ -n "$EXISTING" ] \
+     && [ "$EXISTING" != "ChangeMe2026!" ] \
+     && [ "$EXISTING" != "YourStrongPasswordHere" ] \
+     && [ "$EXISTING" != "Alfa2026Admin" ]; then
+    ADMIN_PASS="$EXISTING"
+    ok ".env уже настроен — оставляю без изменений"
+  else
+    # Перезаписываем дефолтный .env
+    printf 'PORT=8080\nDB_PATH=/app/data/alfa1.db\nSITE_DOMAIN=http://%s\nADMIN_PASSWORD=%s\nSESSION_SECRET=%s\nAPP_ENV=production\n' \
+      "$SERVER_IP" "$ADMIN_PASS" "$SESSION_KEY" > .env
+    ok ".env создан"
   fi
+else
+  printf 'PORT=8080\nDB_PATH=/app/data/alfa1.db\nSITE_DOMAIN=http://%s\nADMIN_PASSWORD=%s\nSESSION_SECRET=%s\nAPP_ENV=production\n' \
+    "$SERVER_IP" "$ADMIN_PASS" "$SESSION_KEY" > .env
+  ok ".env создан"
 fi
 
-if [ "$NEED_CREATE" = "true" ]; then
-  # Генерируем пароль через openssl (без pipefail-проблем)
-  ADMIN_PASS=$(openssl rand -hex 10)
-  # Генерируем секрет сессии
-  SESSION_KEY=$(openssl rand -hex 32)
+# ── 5. Запуск ────────────────────────────────────────────────
+step "Сборка и запуск (1-3 минуты)..."
 
-  cat > .env << ENVEOF
-# =====================================================
-# Конфигурация «Альфа Юнит-1» (создано setup.sh)
-# Изменить домен и пароль можно здесь, затем:
-#   docker compose restart app
-# =====================================================
-
-PORT=8080
-DB_PATH=/app/data/alfa1.db
-SITE_DOMAIN=http://${SERVER_IP}
-ADMIN_PASSWORD=${ADMIN_PASS}
-SESSION_SECRET=${SESSION_KEY}
-APP_ENV=production
-ENVEOF
-
-  success ".env создан"
-fi
-
-# ── 5. Сборка и запуск ───────────────────────────────────────
-step "Сборка Docker-образа и запуск сайта..."
-info "Первая сборка занимает 2-5 минут..."
-
-docker compose down 2>/dev/null || true
+docker compose down --remove-orphans 2>/dev/null || true
 docker compose up -d --build
 
-# ── 6. Проверка запуска ──────────────────────────────────────
-step "Ожидание запуска сайта..."
+# ── 6. Проверка ──────────────────────────────────────────────
+step "Проверка работоспособности..."
 
-READY=false
-for i in $(seq 1 40); do
-  if curl -s --connect-timeout 2 "http://localhost:8080/" > /dev/null 2>&1; then
-    READY=true
+ALIVE=false
+for i in $(seq 1 30); do
+  if curl -sf --connect-timeout 2 "http://localhost:8080/" > /dev/null 2>&1; then
+    ALIVE=true
     break
   fi
   printf "."
@@ -136,39 +131,31 @@ for i in $(seq 1 40); do
 done
 echo ""
 
-if [ "$READY" = "false" ]; then
-  warn "Сайт не ответил за 2 минуты. Проверьте: docker compose logs -f"
+if [ "$ALIVE" = "true" ]; then
+  ok "Сайт отвечает"
 else
-  success "Сайт работает"
+  echo "Логи: docker compose -f ${INSTALL_DIR}/docker-compose.yml logs --tail=30"
 fi
 
-# ── 7. Сохранить данные и показать итог ──────────────────────
-cat > /root/ALFA1_credentials.txt << CREDEOF
-═══════════════════════════════════════════════════
-  АЛЬФА ЮНИТ-1 — данные для входа
-═══════════════════════════════════════════════════
-  Сайт:         http://${SERVER_IP}
-  Admin-панель: http://${SERVER_IP}/admin/
-  Пароль admin: ${ADMIN_PASS}
-═══════════════════════════════════════════════════
-  Создано: $(date)
-  Файл с данными: /root/ALFA1_credentials.txt
-CREDEOF
+# ── 7. Сохранить данные ──────────────────────────────────────
+printf '═══════════════════════════════════\n  АЛЬФА ЮНИТ-1 — данные входа\n═══════════════════════════════════\n  Сайт:   http://%s\n  Admin:  http://%s/admin/\n  Пароль: %s\n═══════════════════════════════════\n  %s\n' \
+  "$SERVER_IP" "$SERVER_IP" "$ADMIN_PASS" "$(date)" \
+  > /root/ALFA1_access.txt
 
+# ── Итог ─────────────────────────────────────────────────────
 echo ""
-echo -e "${BOLD}${GREEN}════════════════════════════════════════════════════${NC}"
-echo -e "${BOLD}${GREEN}   ✓  Установка завершена!                          ${NC}"
-echo -e "${BOLD}${GREEN}════════════════════════════════════════════════════${NC}"
+echo -e "${BOLD}${GREEN}══════════════════════════════════════════${NC}"
+echo -e "${BOLD}${GREEN}  ✓  Готово!                              ${NC}"
+echo -e "${BOLD}${GREEN}══════════════════════════════════════════${NC}"
 echo ""
-echo -e "  ${CYAN}Сайт:${NC}         http://${SERVER_IP}"
-echo -e "  ${CYAN}Admin-панель:${NC} http://${SERVER_IP}/admin/"
-echo -e "  ${CYAN}Пароль admin:${NC} ${BOLD}${YELLOW}${ADMIN_PASS}${NC}"
+echo -e "  Сайт:         ${CYAN}http://${SERVER_IP}${NC}"
+echo -e "  Admin-панель: ${CYAN}http://${SERVER_IP}/admin/${NC}"
+echo -e "  Пароль admin: ${BOLD}${YELLOW}${ADMIN_PASS}${NC}"
 echo ""
-echo -e "${GREEN}Данные сохранены в:${NC} /root/ALFA1_credentials.txt"
+echo -e "  Данные сохранены: ${GREEN}/root/ALFA1_access.txt${NC}"
 echo ""
-echo "Команды управления:"
-echo "  docker compose logs -f          # логи"
-echo "  docker compose restart app      # перезапуск"
-echo "  docker compose down             # остановить"
-echo "  docker compose up -d --build    # обновить"
+echo "  Управление:"
+echo "    docker compose -C ${INSTALL_DIR} logs -f      # логи"
+echo "    docker compose -C ${INSTALL_DIR} restart app  # перезапуск"
+echo "    docker compose -C ${INSTALL_DIR} down         # остановить"
 echo ""
