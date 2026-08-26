@@ -24,7 +24,7 @@ type HomeData struct {
 	SEO           *models.SEOPage
 	Year          int
 	Advantages    []models.Advantage
-	HistoryEvents []models.HistoryEvent
+	HistoryEvents []models.HistoryItem
 	Licenses      []models.License
 	Clients       []models.Client
 	TeamMembers   []models.TeamMember
@@ -49,7 +49,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	services, _ := models.GetServices()
 	seo, _ := models.GetSEOPage("/")
 	advantages, _ := models.GetAdvantages()
-	historyEvents, _ := models.GetHistoryEvents()
+	historyEvents, _ := models.GetHistoryItems()
 	licenses, _ := models.GetLicenses()
 	clients, _ := models.GetClients()
 	teamMembers, _ := models.GetTeamMembers()

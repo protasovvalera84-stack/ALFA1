@@ -6,82 +6,59 @@ import (
 	"alfaunit1/internal/db"
 )
 
-// HistoryEvent represents a timeline event in the company history section.
-type HistoryEvent struct {
+// HistoryItem represents a single entry on the company history timeline.
+type HistoryItem struct {
 	ID          int
-	YearLabel   string
+	Year        string
 	Title       string
+	Subtitle    string
 	Description string
 	Quote       string
 	SortOrder   int
-	Active      bool
 }
 
-// GetHistoryEvents returns all active history events.
-func GetHistoryEvents() ([]HistoryEvent, error) {
+// GetHistoryItems returns all history items ordered by sort_order.
+func GetHistoryItems() ([]HistoryItem, error) {
 	rows, err := db.DB.Query(
-		`SELECT id, year_label, title, description, quote, sort_order, active
-		 FROM history_events WHERE active = 1 ORDER BY sort_order ASC`,
+		`SELECT id, year, title, subtitle, description, quote, sort_order
+		 FROM history_items ORDER BY sort_order ASC`,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("models: GetHistoryEvents: %w", err)
+		return nil, fmt.Errorf("models: GetHistoryItems: %w", err)
 	}
 	defer rows.Close()
-	return scanHistoryEvents(rows)
-}
-
-// GetAllHistoryEvents returns all events for the admin panel.
-func GetAllHistoryEvents() ([]HistoryEvent, error) {
-	rows, err := db.DB.Query(
-		`SELECT id, year_label, title, description, quote, sort_order, active
-		 FROM history_events ORDER BY sort_order ASC`,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("models: GetAllHistoryEvents: %w", err)
-	}
-	defer rows.Close()
-	return scanHistoryEvents(rows)
-}
-
-func scanHistoryEvents(rows interface{ Next() bool; Scan(...any) error; Err() error }) ([]HistoryEvent, error) {
-	var out []HistoryEvent
+	var items []HistoryItem
 	for rows.Next() {
-		var e HistoryEvent
-		var active int
-		if err := rows.Scan(&e.ID, &e.YearLabel, &e.Title, &e.Description, &e.Quote, &e.SortOrder, &active); err != nil {
+		var h HistoryItem
+		if err := rows.Scan(&h.ID, &h.Year, &h.Title, &h.Subtitle, &h.Description, &h.Quote, &h.SortOrder); err != nil {
 			return nil, err
 		}
-		e.Active = active == 1
-		out = append(out, e)
+		items = append(items, h)
 	}
-	return out, rows.Err()
+	return items, rows.Err()
 }
 
-// AddHistoryEvent inserts a new history event.
-func AddHistoryEvent(yearLabel, title, description, quote string) error {
+// CreateHistoryItem inserts a new history item.
+func CreateHistoryItem(year, title, subtitle, description, quote string) error {
 	_, err := db.DB.Exec(
-		`INSERT INTO history_events (year_label, title, description, quote, sort_order)
-		 VALUES (?, ?, ?, ?, (SELECT COALESCE(MAX(sort_order)+1, 0) FROM history_events))`,
-		yearLabel, title, description, quote,
+		`INSERT INTO history_items (year, title, subtitle, description, quote, sort_order)
+		 VALUES (?, ?, ?, ?, ?, (SELECT COALESCE(MAX(sort_order)+1, 0) FROM history_items))`,
+		year, title, subtitle, description, quote,
 	)
 	return err
 }
 
-// UpdateHistoryEvent updates an existing history event.
-func UpdateHistoryEvent(id int, yearLabel, title, description, quote string, active bool) error {
-	a := 0
-	if active {
-		a = 1
-	}
+// UpdateHistoryItem updates an existing history item.
+func UpdateHistoryItem(id int, year, title, subtitle, description, quote string) error {
 	_, err := db.DB.Exec(
-		`UPDATE history_events SET year_label=?, title=?, description=?, quote=?, active=? WHERE id=?`,
-		yearLabel, title, description, quote, a, id,
+		`UPDATE history_items SET year=?, title=?, subtitle=?, description=?, quote=? WHERE id=?`,
+		year, title, subtitle, description, quote, id,
 	)
 	return err
 }
 
-// DeleteHistoryEvent removes a history event.
-func DeleteHistoryEvent(id int) error {
-	_, err := db.DB.Exec(`DELETE FROM history_events WHERE id=?`, id)
+// DeleteHistoryItem removes a history item by ID.
+func DeleteHistoryItem(id int) error {
+	_, err := db.DB.Exec(`DELETE FROM history_items WHERE id=?`, id)
 	return err
 }

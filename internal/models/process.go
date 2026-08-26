@@ -6,58 +6,38 @@ import (
 	"alfaunit1/internal/db"
 )
 
-// ProcessStep represents a step in "how we work" section.
+// ProcessStep represents a single step in the "How We Work" section.
 type ProcessStep struct {
 	ID          int
 	StepNum     string
 	Title       string
 	Description string
 	SortOrder   int
-	Active      bool
 }
 
-// GetProcessSteps returns all active process steps.
+// GetProcessSteps returns all process steps ordered by sort_order.
 func GetProcessSteps() ([]ProcessStep, error) {
 	rows, err := db.DB.Query(
-		`SELECT id, step_num, title, description, sort_order, active
-		 FROM process_steps WHERE active = 1 ORDER BY sort_order ASC`,
+		`SELECT id, step_num, title, description, sort_order
+		 FROM process_steps ORDER BY sort_order ASC`,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("models: GetProcessSteps: %w", err)
 	}
 	defer rows.Close()
-	return scanProcessSteps(rows)
-}
-
-// GetAllProcessSteps returns all steps for the admin panel.
-func GetAllProcessSteps() ([]ProcessStep, error) {
-	rows, err := db.DB.Query(
-		`SELECT id, step_num, title, description, sort_order, active
-		 FROM process_steps ORDER BY sort_order ASC`,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("models: GetAllProcessSteps: %w", err)
-	}
-	defer rows.Close()
-	return scanProcessSteps(rows)
-}
-
-func scanProcessSteps(rows interface{ Next() bool; Scan(...any) error; Err() error }) ([]ProcessStep, error) {
-	var out []ProcessStep
+	var items []ProcessStep
 	for rows.Next() {
-		var s ProcessStep
-		var active int
-		if err := rows.Scan(&s.ID, &s.StepNum, &s.Title, &s.Description, &s.SortOrder, &active); err != nil {
+		var p ProcessStep
+		if err := rows.Scan(&p.ID, &p.StepNum, &p.Title, &p.Description, &p.SortOrder); err != nil {
 			return nil, err
 		}
-		s.Active = active == 1
-		out = append(out, s)
+		items = append(items, p)
 	}
-	return out, rows.Err()
+	return items, rows.Err()
 }
 
-// AddProcessStep inserts a new process step.
-func AddProcessStep(stepNum, title, description string) error {
+// CreateProcessStep inserts a new process step.
+func CreateProcessStep(stepNum, title, description string) error {
 	_, err := db.DB.Exec(
 		`INSERT INTO process_steps (step_num, title, description, sort_order)
 		 VALUES (?, ?, ?, (SELECT COALESCE(MAX(sort_order)+1, 0) FROM process_steps))`,
@@ -66,20 +46,16 @@ func AddProcessStep(stepNum, title, description string) error {
 	return err
 }
 
-// UpdateProcessStep updates an existing step.
-func UpdateProcessStep(id int, stepNum, title, description string, active bool) error {
-	a := 0
-	if active {
-		a = 1
-	}
+// UpdateProcessStep updates an existing process step.
+func UpdateProcessStep(id int, stepNum, title, description string) error {
 	_, err := db.DB.Exec(
-		`UPDATE process_steps SET step_num=?, title=?, description=?, active=? WHERE id=?`,
-		stepNum, title, description, a, id,
+		`UPDATE process_steps SET step_num=?, title=?, description=? WHERE id=?`,
+		stepNum, title, description, id,
 	)
 	return err
 }
 
-// DeleteProcessStep removes a step.
+// DeleteProcessStep removes a process step by ID.
 func DeleteProcessStep(id int) error {
 	_, err := db.DB.Exec(`DELETE FROM process_steps WHERE id=?`, id)
 	return err

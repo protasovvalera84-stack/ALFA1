@@ -2,109 +2,63 @@ package models
 
 import (
 	"fmt"
-	"strings"
 
 	"alfaunit1/internal/db"
 )
 
-// TeamMember represents a team member card on the site.
+// TeamMember represents a person in the "Our Team" section.
 type TeamMember struct {
 	ID          int
-	Initial     string
+	Letter      string
 	Name        string
 	Role        string
 	Department  string
 	Description string
-	Tags        []string
+	Tags        string
 	SortOrder   int
-	Active      bool
 }
 
-func scanTeamMember(id int, initial, name, role, department, description, tags string, sortOrder, active int) TeamMember {
-	m := TeamMember{
-		ID:          id,
-		Initial:     initial,
-		Name:        name,
-		Role:        role,
-		Department:  department,
-		Description: description,
-		SortOrder:   sortOrder,
-		Active:      active == 1,
-	}
-	if tags != "" {
-		m.Tags = strings.Split(tags, ",")
-	}
-	return m
-}
-
-// GetTeamMembers returns all active team members.
+// GetTeamMembers returns all team members ordered by sort_order.
 func GetTeamMembers() ([]TeamMember, error) {
 	rows, err := db.DB.Query(
-		`SELECT id, initial, name, role, department, description, tags, sort_order, active
-		 FROM team_members WHERE active = 1 ORDER BY sort_order ASC`,
+		`SELECT id, letter, name, role, department, description, tags, sort_order
+		 FROM team_members ORDER BY sort_order ASC`,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("models: GetTeamMembers: %w", err)
 	}
 	defer rows.Close()
-	var out []TeamMember
+	var items []TeamMember
 	for rows.Next() {
-		var id, sortOrder, active int
-		var initial, name, role, department, description, tags string
-		if err := rows.Scan(&id, &initial, &name, &role, &department, &description, &tags, &sortOrder, &active); err != nil {
+		var t TeamMember
+		if err := rows.Scan(&t.ID, &t.Letter, &t.Name, &t.Role, &t.Department, &t.Description, &t.Tags, &t.SortOrder); err != nil {
 			return nil, err
 		}
-		out = append(out, scanTeamMember(id, initial, name, role, department, description, tags, sortOrder, active))
+		items = append(items, t)
 	}
-	return out, rows.Err()
+	return items, rows.Err()
 }
 
-// GetAllTeamMembers returns all team members for the admin panel.
-func GetAllTeamMembers() ([]TeamMember, error) {
-	rows, err := db.DB.Query(
-		`SELECT id, initial, name, role, department, description, tags, sort_order, active
-		 FROM team_members ORDER BY sort_order ASC`,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("models: GetAllTeamMembers: %w", err)
-	}
-	defer rows.Close()
-	var out []TeamMember
-	for rows.Next() {
-		var id, sortOrder, active int
-		var initial, name, role, department, description, tags string
-		if err := rows.Scan(&id, &initial, &name, &role, &department, &description, &tags, &sortOrder, &active); err != nil {
-			return nil, err
-		}
-		out = append(out, scanTeamMember(id, initial, name, role, department, description, tags, sortOrder, active))
-	}
-	return out, rows.Err()
-}
-
-// AddTeamMember inserts a new team member.
-func AddTeamMember(initial, name, role, department, description, tags string) error {
+// CreateTeamMember inserts a new team member record.
+func CreateTeamMember(letter, name, role, department, description, tags string) error {
 	_, err := db.DB.Exec(
-		`INSERT INTO team_members (initial, name, role, department, description, tags, sort_order)
+		`INSERT INTO team_members (letter, name, role, department, description, tags, sort_order)
 		 VALUES (?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(sort_order)+1, 0) FROM team_members))`,
-		initial, name, role, department, description, tags,
+		letter, name, role, department, description, tags,
 	)
 	return err
 }
 
-// UpdateTeamMember updates an existing team member.
-func UpdateTeamMember(id int, initial, name, role, department, description, tags string, active bool) error {
-	a := 0
-	if active {
-		a = 1
-	}
+// UpdateTeamMember updates an existing team member record.
+func UpdateTeamMember(id int, letter, name, role, department, description, tags string) error {
 	_, err := db.DB.Exec(
-		`UPDATE team_members SET initial=?, name=?, role=?, department=?, description=?, tags=?, active=? WHERE id=?`,
-		initial, name, role, department, description, tags, a, id,
+		`UPDATE team_members SET letter=?, name=?, role=?, department=?, description=?, tags=? WHERE id=?`,
+		letter, name, role, department, description, tags, id,
 	)
 	return err
 }
 
-// DeleteTeamMember removes a team member.
+// DeleteTeamMember removes a team member by ID.
 func DeleteTeamMember(id int) error {
 	_, err := db.DB.Exec(`DELETE FROM team_members WHERE id=?`, id)
 	return err

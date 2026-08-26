@@ -326,231 +326,9 @@ func AdminSEO(w http.ResponseWriter, r *http.Request) {
 // ── Clients ───────────────────────────────────────────────────────────────────
 
 // AdminClients manages client / protected-object cards.
-func AdminClients(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, "bad request", http.StatusBadRequest)
-			return
-		}
-		switch r.FormValue("action") {
-		case "add":
-			_ = models.AddClient(
-				r.FormValue("initial"),
-				r.FormValue("name"),
-				r.FormValue("type_label"),
-				r.FormValue("description"),
-				r.FormValue("tags"),
-			)
-		case "delete":
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.DeleteClient(id)
-			}
-		default:
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.UpdateClient(id,
-					r.FormValue("initial"),
-					r.FormValue("name"),
-					r.FormValue("type_label"),
-					r.FormValue("description"),
-					r.FormValue("tags"),
-					r.FormValue("active") == "1",
-				)
-			}
-		}
-		http.Redirect(w, r, "/admin/clients?saved=1", http.StatusFound)
-		return
-	}
-
-	items, err := models.GetAllClients()
-	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	data := struct {
-		adminData
-		Items []models.Client
-		Saved bool
-	}{
-		adminData: baseAdmin("Наши клиенты"),
-		Items:     items,
-		Saved:     r.URL.Query().Get("saved") == "1",
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "clients.html", data); err != nil {
-		log.Printf("admin: clients render: %v", err)
-	}
-}
-
-// ── Team ──────────────────────────────────────────────────────────────────────
-
-// AdminTeam manages team member cards.
-func AdminTeam(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, "bad request", http.StatusBadRequest)
-			return
-		}
-		switch r.FormValue("action") {
-		case "add":
-			_ = models.AddTeamMember(
-				r.FormValue("initial"),
-				r.FormValue("name"),
-				r.FormValue("role"),
-				r.FormValue("department"),
-				r.FormValue("description"),
-				r.FormValue("tags"),
-			)
-		case "delete":
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.DeleteTeamMember(id)
-			}
-		default:
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.UpdateTeamMember(id,
-					r.FormValue("initial"),
-					r.FormValue("name"),
-					r.FormValue("role"),
-					r.FormValue("department"),
-					r.FormValue("description"),
-					r.FormValue("tags"),
-					r.FormValue("active") == "1",
-				)
-			}
-		}
-		http.Redirect(w, r, "/admin/team?saved=1", http.StatusFound)
-		return
-	}
-
-	items, err := models.GetAllTeamMembers()
-	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	data := struct {
-		adminData
-		Items []models.TeamMember
-		Saved bool
-	}{
-		adminData: baseAdmin("Команда"),
-		Items:     items,
-		Saved:     r.URL.Query().Get("saved") == "1",
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "team.html", data); err != nil {
-		log.Printf("admin: team render: %v", err)
-	}
-}
-
-// ── Process ───────────────────────────────────────────────────────────────────
-
-// AdminProcess manages "how we work" process steps.
-func AdminProcess(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, "bad request", http.StatusBadRequest)
-			return
-		}
-		switch r.FormValue("action") {
-		case "add":
-			_ = models.AddProcessStep(
-				r.FormValue("step_num"),
-				r.FormValue("title"),
-				r.FormValue("description"),
-			)
-		case "delete":
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.DeleteProcessStep(id)
-			}
-		default:
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.UpdateProcessStep(id,
-					r.FormValue("step_num"),
-					r.FormValue("title"),
-					r.FormValue("description"),
-					r.FormValue("active") == "1",
-				)
-			}
-		}
-		http.Redirect(w, r, "/admin/process?saved=1", http.StatusFound)
-		return
-	}
-
-	items, err := models.GetAllProcessSteps()
-	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	data := struct {
-		adminData
-		Items []models.ProcessStep
-		Saved bool
-	}{
-		adminData: baseAdmin("Как мы работаем"),
-		Items:     items,
-		Saved:     r.URL.Query().Get("saved") == "1",
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "process.html", data); err != nil {
-		log.Printf("admin: process render: %v", err)
-	}
-}
-
-// ── FAQ ───────────────────────────────────────────────────────────────────────
-
-// AdminFAQ manages FAQ items.
-func AdminFAQ(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, "bad request", http.StatusBadRequest)
-			return
-		}
-		switch r.FormValue("action") {
-		case "add":
-			_ = models.AddFAQItem(r.FormValue("question"), r.FormValue("answer"))
-		case "delete":
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.DeleteFAQItem(id)
-			}
-		default:
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.UpdateFAQItem(id,
-					r.FormValue("question"),
-					r.FormValue("answer"),
-					r.FormValue("active") == "1",
-				)
-			}
-		}
-		http.Redirect(w, r, "/admin/faq?saved=1", http.StatusFound)
-		return
-	}
-
-	items, err := models.GetAllFAQItems()
-	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	data := struct {
-		adminData
-		Items []models.FAQItem
-		Saved bool
-	}{
-		adminData: baseAdmin("Вопросы и ответы"),
-		Items:     items,
-		Saved:     r.URL.Query().Get("saved") == "1",
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "faq.html", data); err != nil {
-		log.Printf("admin: faq render: %v", err)
-	}
-}
 
 // ── Advantages ────────────────────────────────────────────────────────────────
 
-// AdminAdvantages manages "why choose us" advantage cards.
 func AdminAdvantages(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		if err := r.ParseForm(); err != nil {
@@ -559,39 +337,28 @@ func AdminAdvantages(w http.ResponseWriter, r *http.Request) {
 		}
 		switch r.FormValue("action") {
 		case "add":
-			_ = models.AddAdvantage(r.FormValue("title"), r.FormValue("description"))
+			_ = models.CreateAdvantage(r.FormValue("title"), r.FormValue("description"))
+		case "update":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.UpdateAdvantage(id, r.FormValue("title"), r.FormValue("description"))
 		case "delete":
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.DeleteAdvantage(id)
-			}
-		default:
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.UpdateAdvantage(id,
-					r.FormValue("title"),
-					r.FormValue("description"),
-					r.FormValue("active") == "1",
-				)
-			}
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.DeleteAdvantage(id)
 		}
 		http.Redirect(w, r, "/admin/advantages?saved=1", http.StatusFound)
 		return
 	}
-
-	items, err := models.GetAllAdvantages()
+	items, err := models.GetAdvantages()
 	if err != nil {
+		log.Printf("admin: advantages: %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-
 	data := struct {
 		adminData
 		Items []models.Advantage
 		Saved bool
-	}{
-		adminData: baseAdmin("Почему выбирают нас"),
-		Items:     items,
-		Saved:     r.URL.Query().Get("saved") == "1",
-	}
+	}{adminData: baseAdmin("Преимущества"), Items: items, Saved: r.URL.Query().Get("saved") == "1"}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := AdminTemplates.ExecuteTemplate(w, "advantages.html", data); err != nil {
 		log.Printf("admin: advantages render: %v", err)
@@ -600,7 +367,6 @@ func AdminAdvantages(w http.ResponseWriter, r *http.Request) {
 
 // ── History ───────────────────────────────────────────────────────────────────
 
-// AdminHistory manages company history timeline events.
 func AdminHistory(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		if err := r.ParseForm(); err != nil {
@@ -609,46 +375,30 @@ func AdminHistory(w http.ResponseWriter, r *http.Request) {
 		}
 		switch r.FormValue("action") {
 		case "add":
-			_ = models.AddHistoryEvent(
-				r.FormValue("year_label"),
-				r.FormValue("title"),
-				r.FormValue("description"),
-				r.FormValue("quote"),
-			)
+			_ = models.CreateHistoryItem(r.FormValue("year"), r.FormValue("title"),
+				r.FormValue("subtitle"), r.FormValue("description"), r.FormValue("quote"))
+		case "update":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.UpdateHistoryItem(id, r.FormValue("year"), r.FormValue("title"),
+				r.FormValue("subtitle"), r.FormValue("description"), r.FormValue("quote"))
 		case "delete":
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.DeleteHistoryEvent(id)
-			}
-		default:
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.UpdateHistoryEvent(id,
-					r.FormValue("year_label"),
-					r.FormValue("title"),
-					r.FormValue("description"),
-					r.FormValue("quote"),
-					r.FormValue("active") == "1",
-				)
-			}
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.DeleteHistoryItem(id)
 		}
 		http.Redirect(w, r, "/admin/history?saved=1", http.StatusFound)
 		return
 	}
-
-	items, err := models.GetAllHistoryEvents()
+	items, err := models.GetHistoryItems()
 	if err != nil {
+		log.Printf("admin: history: %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-
 	data := struct {
 		adminData
-		Items []models.HistoryEvent
+		Items []models.HistoryItem
 		Saved bool
-	}{
-		adminData: baseAdmin("История компании"),
-		Items:     items,
-		Saved:     r.URL.Query().Get("saved") == "1",
-	}
+	}{adminData: baseAdmin("История компании"), Items: items, Saved: r.URL.Query().Get("saved") == "1"}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := AdminTemplates.ExecuteTemplate(w, "history.html", data); err != nil {
 		log.Printf("admin: history render: %v", err)
@@ -657,7 +407,6 @@ func AdminHistory(w http.ResponseWriter, r *http.Request) {
 
 // ── Licenses ──────────────────────────────────────────────────────────────────
 
-// AdminLicenses manages license / certificate cards.
 func AdminLicenses(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		if err := r.ParseForm(); err != nil {
@@ -666,53 +415,193 @@ func AdminLicenses(w http.ResponseWriter, r *http.Request) {
 		}
 		switch r.FormValue("action") {
 		case "add":
-			_ = models.AddLicense(
-				r.FormValue("type_label"),
-				r.FormValue("company"),
-				r.FormValue("description"),
-				r.FormValue("status_text"),
-			)
+			_ = models.CreateLicense(r.FormValue("title"), r.FormValue("subtitle"),
+				r.FormValue("description"), r.FormValue("badge"))
+		case "update":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.UpdateLicense(id, r.FormValue("title"), r.FormValue("subtitle"),
+				r.FormValue("description"), r.FormValue("badge"))
 		case "delete":
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.DeleteLicense(id)
-			}
-		default:
-			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
-				_ = models.UpdateLicense(id,
-					r.FormValue("type_label"),
-					r.FormValue("company"),
-					r.FormValue("description"),
-					r.FormValue("status_text"),
-					r.FormValue("active") == "1",
-				)
-			}
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.DeleteLicense(id)
 		}
 		http.Redirect(w, r, "/admin/licenses?saved=1", http.StatusFound)
 		return
 	}
-
-	items, err := models.GetAllLicenses()
+	items, err := models.GetLicenses()
 	if err != nil {
+		log.Printf("admin: licenses: %v", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-
 	data := struct {
 		adminData
 		Items []models.License
 		Saved bool
-	}{
-		adminData: baseAdmin("Лицензии и документы"),
-		Items:     items,
-		Saved:     r.URL.Query().Get("saved") == "1",
-	}
+	}{adminData: baseAdmin("Лицензии и документы"), Items: items, Saved: r.URL.Query().Get("saved") == "1"}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := AdminTemplates.ExecuteTemplate(w, "licenses.html", data); err != nil {
 		log.Printf("admin: licenses render: %v", err)
 	}
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Clients ───────────────────────────────────────────────────────────────────
+
+func AdminClients(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.CreateClient(r.FormValue("letter"), r.FormValue("name"),
+				r.FormValue("sector"), r.FormValue("description"), r.FormValue("tags"))
+		case "update":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.UpdateClient(id, r.FormValue("letter"), r.FormValue("name"),
+				r.FormValue("sector"), r.FormValue("description"), r.FormValue("tags"))
+		case "delete":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.DeleteClient(id)
+		}
+		http.Redirect(w, r, "/admin/clients?saved=1", http.StatusFound)
+		return
+	}
+	items, err := models.GetClients()
+	if err != nil {
+		log.Printf("admin: clients: %v", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	data := struct {
+		adminData
+		Items []models.Client
+		Saved bool
+	}{adminData: baseAdmin("Наши клиенты"), Items: items, Saved: r.URL.Query().Get("saved") == "1"}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := AdminTemplates.ExecuteTemplate(w, "clients.html", data); err != nil {
+		log.Printf("admin: clients render: %v", err)
+	}
+}
+
+// ── Team ──────────────────────────────────────────────────────────────────────
+
+func AdminTeam(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.CreateTeamMember(r.FormValue("letter"), r.FormValue("name"),
+				r.FormValue("role"), r.FormValue("department"),
+				r.FormValue("description"), r.FormValue("tags"))
+		case "update":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.UpdateTeamMember(id, r.FormValue("letter"), r.FormValue("name"),
+				r.FormValue("role"), r.FormValue("department"),
+				r.FormValue("description"), r.FormValue("tags"))
+		case "delete":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.DeleteTeamMember(id)
+		}
+		http.Redirect(w, r, "/admin/team?saved=1", http.StatusFound)
+		return
+	}
+	items, err := models.GetTeamMembers()
+	if err != nil {
+		log.Printf("admin: team: %v", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	data := struct {
+		adminData
+		Items []models.TeamMember
+		Saved bool
+	}{adminData: baseAdmin("Наша команда"), Items: items, Saved: r.URL.Query().Get("saved") == "1"}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := AdminTemplates.ExecuteTemplate(w, "team.html", data); err != nil {
+		log.Printf("admin: team render: %v", err)
+	}
+}
+
+// ── Process ───────────────────────────────────────────────────────────────────
+
+func AdminProcess(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.CreateProcessStep(r.FormValue("step_num"), r.FormValue("title"), r.FormValue("description"))
+		case "update":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.UpdateProcessStep(id, r.FormValue("step_num"), r.FormValue("title"), r.FormValue("description"))
+		case "delete":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.DeleteProcessStep(id)
+		}
+		http.Redirect(w, r, "/admin/process?saved=1", http.StatusFound)
+		return
+	}
+	items, err := models.GetProcessSteps()
+	if err != nil {
+		log.Printf("admin: process: %v", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	data := struct {
+		adminData
+		Items []models.ProcessStep
+		Saved bool
+	}{adminData: baseAdmin("Как мы работаем"), Items: items, Saved: r.URL.Query().Get("saved") == "1"}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := AdminTemplates.ExecuteTemplate(w, "process.html", data); err != nil {
+		log.Printf("admin: process render: %v", err)
+	}
+}
+
+// ── FAQ ───────────────────────────────────────────────────────────────────────
+
+func AdminFAQ(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.CreateFAQItem(r.FormValue("question"), r.FormValue("answer"))
+		case "update":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.UpdateFAQItem(id, r.FormValue("question"), r.FormValue("answer"))
+		case "delete":
+			id, _ := strconv.Atoi(r.FormValue("id"))
+			_ = models.DeleteFAQItem(id)
+		}
+		http.Redirect(w, r, "/admin/faq?saved=1", http.StatusFound)
+		return
+	}
+	items, err := models.GetFAQItems()
+	if err != nil {
+		log.Printf("admin: faq: %v", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	data := struct {
+		adminData
+		Items []models.FAQItem
+		Saved bool
+	}{adminData: baseAdmin("Вопросы и ответы"), Items: items, Saved: r.URL.Query().Get("saved") == "1"}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := AdminTemplates.ExecuteTemplate(w, "faq.html", data); err != nil {
+		log.Printf("admin: faq render: %v", err)
+	}
+}
 
 func renderLoginError(w http.ResponseWriter, errMsg string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
