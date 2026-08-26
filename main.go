@@ -115,14 +115,13 @@ func main() {
 	adminRoutes.HandleFunc("/admin/services", handlers.AdminServices)
 	adminRoutes.HandleFunc("/admin/contacts", handlers.AdminContacts)
 	adminRoutes.HandleFunc("/admin/seo", handlers.AdminSEO)
-	// New content-management routes.
+	adminRoutes.HandleFunc("/admin/advantages", handlers.AdminAdvantages)
+	adminRoutes.HandleFunc("/admin/history", handlers.AdminHistory)
+	adminRoutes.HandleFunc("/admin/licenses", handlers.AdminLicenses)
 	adminRoutes.HandleFunc("/admin/clients", handlers.AdminClients)
 	adminRoutes.HandleFunc("/admin/team", handlers.AdminTeam)
 	adminRoutes.HandleFunc("/admin/process", handlers.AdminProcess)
 	adminRoutes.HandleFunc("/admin/faq", handlers.AdminFAQ)
-	adminRoutes.HandleFunc("/admin/advantages", handlers.AdminAdvantages)
-	adminRoutes.HandleFunc("/admin/history", handlers.AdminHistory)
-	adminRoutes.HandleFunc("/admin/licenses", handlers.AdminLicenses)
 
 	mux.Handle("/admin/", middleware.RequireAuth(adminRoutes))
 

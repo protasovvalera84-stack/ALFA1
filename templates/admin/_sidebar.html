@@ -38,6 +38,9 @@
 </aside>
 {{end}}
 
+{{/* sidebar is an alias for admin_sidebar — used by self-contained templates */}}
+{{define "sidebar"}}{{template "admin_sidebar" .}}{{end}}
+
 {{define "admin_head"}}
 <!doctype html>
 <html lang="ru">
