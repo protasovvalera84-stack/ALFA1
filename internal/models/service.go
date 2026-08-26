@@ -77,3 +77,19 @@ func UpdateService(id int, name, description string, active bool) error {
 	)
 	return err
 }
+
+// AddService inserts a new service record.
+func AddService(name, description string) error {
+	_, err := db.DB.Exec(
+		`INSERT INTO services (name, description, sort_order)
+		 VALUES (?, ?, (SELECT COALESCE(MAX(sort_order)+1, 0) FROM services))`,
+		name, description,
+	)
+	return err
+}
+
+// DeleteService removes a service record.
+func DeleteService(id int) error {
+	_, err := db.DB.Exec(`DELETE FROM services WHERE id=?`, id)
+	return err
+}
