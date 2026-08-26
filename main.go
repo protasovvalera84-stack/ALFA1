@@ -67,6 +67,7 @@ func main() {
 		"safeHTML": func(s string) template.HTML { return template.HTML(s) }, //nolint:gosec
 		"mul":      func(a, b int) int { return a * b },
 		"add":      func(a, b int) int { return a + b },
+		"mod":      func(a, b int) int { return a % b },
 	}
 
 	// Public site templates.
@@ -115,6 +116,13 @@ func main() {
 	adminRoutes.HandleFunc("/admin/services", handlers.AdminServices)
 	adminRoutes.HandleFunc("/admin/contacts", handlers.AdminContacts)
 	adminRoutes.HandleFunc("/admin/seo", handlers.AdminSEO)
+	adminRoutes.HandleFunc("/admin/advantages", handlers.AdminAdvantages)
+	adminRoutes.HandleFunc("/admin/history", handlers.AdminHistory)
+	adminRoutes.HandleFunc("/admin/licenses", handlers.AdminLicenses)
+	adminRoutes.HandleFunc("/admin/clients", handlers.AdminClients)
+	adminRoutes.HandleFunc("/admin/team", handlers.AdminTeam)
+	adminRoutes.HandleFunc("/admin/process", handlers.AdminProcess)
+	adminRoutes.HandleFunc("/admin/faq", handlers.AdminFAQ)
 
 	mux.Handle("/admin/", middleware.RequireAuth(adminRoutes))
 

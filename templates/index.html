@@ -676,203 +676,19 @@
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          <div
-            class="advantage-item flex items-start gap-4 group"
-            data-aos="fade-right"
-            data-aos-delay="0"
-          >
-            <div
-              class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors mt-0.5"
-            >
-              <svg
-                class="w-6 h-6 text-gold"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 01.42 12c0 2.01.5 3.903 1.378 5.56A11.956 11.956 0 013.6 18M12 2.764A11.959 11.959 0 0120.402 6 11.955 11.955 0 0123.58 12a11.955 11.955 0 01-3.177 5.56A11.956 11.956 0 0112 21.236"
-                />
+          {{range $i, $a := .Advantages}}
+          <div class="advantage-item flex items-start gap-4 group" data-aos="fade-up" data-aos-delay="{{mul $i 100}}">
+            <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors mt-0.5">
+              <svg class="w-6 h-6 text-gold" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
             <div>
-              <h3 class="font-semibold text-lg mb-2 group-hover:text-gold transition-colors">
-                Лицензированная деятельность
-              </h3>
-              <p class="text-white/50 text-sm leading-relaxed">
-                Имеем все необходимые лицензии на осуществление частной охранной деятельности для
-                обоих юридических лиц группы.
-              </p>
+              <h3 class="font-semibold text-lg mb-2 group-hover:text-gold transition-colors">{{$a.Title}}</h3>
+              <p class="text-white/50 text-sm leading-relaxed">{{$a.Description}}</p>
             </div>
           </div>
-
-          <div
-            class="advantage-item flex items-start gap-4 group"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div
-              class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors mt-0.5"
-            >
-              <svg
-                class="w-6 h-6 text-gold"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                />
-              </svg>
-            </div>
-            <div>
-              <h3 class="font-semibold text-lg mb-2 group-hover:text-gold transition-colors">
-                Ветераны подразделения «Альфа»
-              </h3>
-              <p class="text-white/50 text-sm leading-relaxed">
-                Костяк компании — профессионалы с боевым опытом, члены Международной ассоциации
-                ветеранов «АЛЬФА».
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="advantage-item flex items-start gap-4 group"
-            data-aos="fade-left"
-            data-aos-delay="200"
-          >
-            <div
-              class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors mt-0.5"
-            >
-              <svg
-                class="w-6 h-6 text-gold"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"
-                />
-              </svg>
-            </div>
-            <div>
-              <h3 class="font-semibold text-lg mb-2 group-hover:text-gold transition-colors">
-                Современные средства охраны
-              </h3>
-              <p class="text-white/50 text-sm leading-relaxed">
-                Используем передовые технологии: системы видеонаблюдения, тревожные кнопки,
-                GPS-мониторинг транспорта.
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="advantage-item flex items-start gap-4 group"
-            data-aos="fade-right"
-            data-aos-delay="100"
-          >
-            <div
-              class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors mt-0.5"
-            >
-              <svg
-                class="w-6 h-6 text-gold"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                />
-              </svg>
-            </div>
-            <div>
-              <h3 class="font-semibold text-lg mb-2 group-hover:text-gold transition-colors">
-                Индивидуальный подход
-              </h3>
-              <p class="text-white/50 text-sm leading-relaxed">
-                Разрабатываем план охраны конкретно под ваш объект: анализируем риски, предлагаем
-                оптимальное решение.
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="advantage-item flex items-start gap-4 group"
-            data-aos="fade-up"
-            data-aos-delay="200"
-          >
-            <div
-              class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors mt-0.5"
-            >
-              <svg
-                class="w-6 h-6 text-gold"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
-                />
-              </svg>
-            </div>
-            <div>
-              <h3 class="font-semibold text-lg mb-2 group-hover:text-gold transition-colors">
-                Полная конфиденциальность
-              </h3>
-              <p class="text-white/50 text-sm leading-relaxed">
-                Строго соблюдаем режим коммерческой тайны. Информация об объектах и клиентах не
-                разглашается третьим лицам.
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="advantage-item flex items-start gap-4 group"
-            data-aos="fade-left"
-            data-aos-delay="100"
-          >
-            <div
-              class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors mt-0.5"
-            >
-              <svg
-                class="w-6 h-6 text-gold"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <div>
-              <h3 class="font-semibold text-lg mb-2 group-hover:text-gold transition-colors">
-                Круглосуточная поддержка
-              </h3>
-              <p class="text-white/50 text-sm leading-relaxed">
-                Оперативный центр работает 24/7. Время реагирования на тревожный сигнал —
-                минимальное по СПб.
-              </p>
-            </div>
-          </div>
+          {{end}}
         </div>
       </div>
 
@@ -904,164 +720,30 @@
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- License card 1 -->
-          <div
-            class="license-card glass-panel border border-white/10 rounded-2xl p-6 group hover:border-gold/40 transition-all duration-300"
-            data-aos="fade-up"
-            data-aos-delay="0"
-          >
+          {{range $i, $l := .Licenses}}
+          <div class="license-card glass-panel border border-white/10 rounded-2xl p-6 group hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="{{mul $i 100}}">
             <div class="flex items-start gap-4 mb-5">
-              <div
-                class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0"
-              >
-                <svg
-                  class="w-6 h-6 text-gold"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                  />
+              <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+                <svg class="w-6 h-6 text-gold" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
                 </svg>
               </div>
               <div>
-                <div class="text-xs text-gold/60 uppercase tracking-widest mb-1">Лицензия ЧОО</div>
-                <h3 class="font-semibold text-base">«Альфа Юнит-1»</h3>
+                <div class="text-xs text-gold/60 uppercase tracking-widest mb-1">{{$l.TypeLabel}}</div>
+                <h3 class="font-semibold text-base">{{$l.Title}}</h3>
               </div>
             </div>
-            <p class="text-white/50 text-sm leading-relaxed">
-              Лицензия на осуществление частной охранной деятельности ЧОО «Альфа Юнит-1».
-              Санкт-Петербург и СЗФО.
-            </p>
+            <p class="text-white/50 text-sm leading-relaxed">{{$l.Description}}</p>
             <div class="mt-4 pt-4 border-t border-white/10">
               <span class="inline-flex items-center gap-1.5 text-xs text-gold/70">
-                <svg
-                  class="w-3.5 h-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Действующая лицензия
+                {{$l.BadgeLabel}}
               </span>
             </div>
           </div>
-
-          <!-- License card 2 -->
-          <div
-            class="license-card glass-panel border border-white/10 rounded-2xl p-6 group hover:border-gold/40 transition-all duration-300"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="flex items-start gap-4 mb-5">
-              <div
-                class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0"
-              >
-                <svg
-                  class="w-6 h-6 text-gold"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <div class="text-xs text-gold/60 uppercase tracking-widest mb-1">Лицензия ЧОО</div>
-                <h3 class="font-semibold text-base">«Альфа Безопасность»</h3>
-              </div>
-            </div>
-            <p class="text-white/50 text-sm leading-relaxed">
-              Лицензия на осуществление частной охранной деятельности ЧОО «Альфа Безопасность».
-              Санкт-Петербург и СЗФО.
-            </p>
-            <div class="mt-4 pt-4 border-t border-white/10">
-              <span class="inline-flex items-center gap-1.5 text-xs text-gold/70">
-                <svg
-                  class="w-3.5 h-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Действующая лицензия
-              </span>
-            </div>
-          </div>
-
-          <!-- Certificate card -->
-          <div
-            class="license-card glass-panel border border-white/10 rounded-2xl p-6 group hover:border-gold/40 transition-all duration-300"
-            data-aos="fade-up"
-            data-aos-delay="200"
-          >
-            <div class="flex items-start gap-4 mb-5">
-              <div
-                class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0"
-              >
-                <svg
-                  class="w-6 h-6 text-gold"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <div class="text-xs text-gold/60 uppercase tracking-widest mb-1">Свидетельство</div>
-                <h3 class="font-semibold text-base">Ассоциация «Альфа»</h3>
-              </div>
-            </div>
-            <p class="text-white/50 text-sm leading-relaxed">
-              Свидетельство о членстве в Международной ассоциации ветеранов подразделения «АЛЬФА» —
-              знак высокого профессионализма.
-            </p>
-            <div class="mt-4 pt-4 border-t border-white/10">
-              <span class="inline-flex items-center gap-1.5 text-xs text-gold/70">
-                <svg
-                  class="w-3.5 h-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Действующее свидетельство
-              </span>
-            </div>
-          </div>
+          {{end}}
         </div>
 
         <!-- Legal basis -->
@@ -1135,186 +817,25 @@
             class="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-gold/40 via-gold/20 to-transparent -translate-x-1/2"
           ></div>
 
-          <div class="space-y-8 lg:space-y-0">
-            <!-- Event 1 -->
-            <div
-              class="timeline-item lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-16"
-              data-aos="fade-right"
-            >
-              <div class="lg:text-right lg:pr-16 mb-4 lg:mb-0">
-                <div
-                  class="inline-block glass-panel border border-gold/30 rounded-xl px-5 py-3 mb-4"
-                >
-                  <span class="font-display text-3xl text-gold">1980</span>
-                </div>
-                <h3 class="font-bold text-xl mb-3 text-white">Олимпийская группа захвата</h3>
-                <p class="text-white/55 leading-relaxed">
-                  Создана специальная группа захвата для обеспечения безопасности в период
-                  проведения Олимпийских игр в Москве. Одно из самых подготовленных и
-                  профессиональных подразделений МВД СССР — образец для всех последующих структур
-                  компании.
-                </p>
-              </div>
-              <!-- Central dot -->
-              <div
-                class="hidden lg:flex absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-gold border-2 border-bg-secondary items-center justify-center"
-              >
-                <div class="w-2 h-2 rounded-full bg-bg-secondary"></div>
-              </div>
-              <div class="lg:pl-16 hidden lg:block">
-                <div
-                  class="glass-panel border border-white/10 rounded-2xl p-6 h-full flex items-center"
-                >
-                  <p class="text-white/40 text-sm italic leading-relaxed">
-                    «Десятки блестяще проведённых операций — задержание вооружённых и особо опасных
-                    преступников живыми, без применения оружия»
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Event 2 -->
-            <div
-              class="timeline-item lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-16 lg:mt-16"
-              data-aos="fade-left"
-            >
-              <div class="lg:pr-16 hidden lg:block">
-                <div
-                  class="glass-panel border border-white/10 rounded-2xl p-6 h-full flex items-center"
-                >
-                  <p class="text-white/40 text-sm italic leading-relaxed">
-                    Рота специализировалась на задержании вооружённых и особо опасных преступников —
-                    живыми и без применения оружия.
-                  </p>
-                </div>
-              </div>
-              <div
-                class="hidden lg:flex absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-gold border-2 border-bg-secondary items-center justify-center mt-4"
-              >
-                <div class="w-2 h-2 rounded-full bg-bg-secondary"></div>
-              </div>
-              <div class="lg:pl-16 mb-4 lg:mb-0">
-                <div
-                  class="inline-block glass-panel border border-gold/30 rounded-xl px-5 py-3 mb-4"
-                >
-                  <span class="font-display text-3xl text-gold">1985–1995</span>
-                </div>
-                <h3 class="font-bold text-xl mb-3 text-white">
-                  Рота оперативного реагирования (РОР)
-                </h3>
-                <p class="text-white/55 leading-relaxed">
-                  Преемник олимпийской группы — Рота оперативного реагирования. Специализация:
-                  задержание вооружённых и особо опасных преступников. Десятки успешных операций по
-                  всему Северо-Западу.
-                </p>
-              </div>
-            </div>
-
-            <!-- Event 3 -->
-            <div
-              class="timeline-item lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-16 lg:mt-16"
-              data-aos="fade-right"
-            >
-              <div class="lg:text-right lg:pr-16 mb-4 lg:mb-0">
-                <div
-                  class="inline-block glass-panel border border-gold/30 rounded-xl px-5 py-3 mb-4"
-                >
-                  <span class="font-display text-3xl text-gold">1990-е</span>
-                </div>
-                <h3 class="font-bold text-xl mb-3 text-white">Формирование Резерва и СОБР</h3>
-                <p class="text-white/55 leading-relaxed">
-                  На базе РОР сформирован Резерв — подразделение для выполнения задач наивысшей
-                  сложности. Впоследствии преобразован в самостоятельный Специальный отряд быстрого
-                  реагирования (СОБР).
-                </p>
-              </div>
-              <div
-                class="hidden lg:flex absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-gold border-2 border-bg-secondary items-center justify-center"
-              >
-                <div class="w-2 h-2 rounded-full bg-bg-secondary"></div>
-              </div>
-              <div class="lg:pl-16 hidden lg:block">
-                <div
-                  class="glass-panel border border-white/10 rounded-2xl p-6 h-full flex items-center"
-                >
-                  <p class="text-white/40 text-sm italic leading-relaxed">
-                    Ветераны СОБР и РОР стали основой нового охранного предприятия, принеся с собой
-                    уникальный боевой опыт.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Event 4 -->
-            <div
-              class="timeline-item lg:grid lg:grid-cols-2 lg:gap-16 lg:mb-16 lg:mt-16"
-              data-aos="fade-left"
-            >
-              <div class="lg:pr-16 hidden lg:block">
-                <div
-                  class="glass-panel border border-gold/30 rounded-xl p-6 h-full flex flex-col justify-center"
-                >
-                  <div class="text-5xl font-display text-gold/20 mb-2">
-                    {{.Settings.FoundedYear}}
-                  </div>
-                  <p class="text-white/40 text-sm">Год основания группы компаний «Альфа Юнит-1»</p>
-                </div>
-              </div>
-              <div
-                class="hidden lg:flex absolute left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-gold border-2 border-bg-secondary items-center justify-center"
-              >
-                <div class="w-3 h-3 rounded-full bg-[#D4AF37]"></div>
-              </div>
-              <div class="lg:pl-16 mb-4 lg:mb-0">
-                <div
-                  class="inline-block glass-panel border border-gold/30 rounded-xl px-5 py-3 mb-4"
-                >
-                  <span class="font-display text-3xl text-gold">{{.Settings.FoundedYear}}</span>
-                </div>
-                <h3 class="font-bold text-xl mb-3 text-white">Основание ЧОО «Альфа Юнит-1»</h3>
-                <p class="text-white/55 leading-relaxed">
-                  Ветераны элитных силовых структур создали частное охранное предприятие в
-                  Санкт-Петербурге. С первых дней компания объединила высочайший профессионализм
-                  силовых структур с гибкостью коммерческой организации.
-                </p>
-              </div>
-            </div>
-
-            <!-- Event 5 – Today -->
-            <div class="timeline-item lg:grid lg:grid-cols-2 lg:gap-16 lg:mt-16" data-aos="fade-up">
-              <div class="lg:text-right lg:pr-16 mb-4 lg:mb-0">
-                <div class="inline-block bg-gold rounded-xl px-5 py-3 mb-4">
-                  <span class="font-display text-3xl text-bg-primary">Сегодня</span>
-                </div>
-                <h3 class="font-bold text-xl mb-3 text-white">Группа компаний — лидер СЗФО</h3>
-                <p class="text-white/55 leading-relaxed">
-                  Два юридических лица (ЧОО «Альфа Юнит-1» и ЧОО «Альфа Безопасность»), более
-                  {{.Settings.StatsObjects}} объектов под охраной, {{.Settings.StatsStaff}}
-                  сотрудников. Офисы в Санкт-Петербурге и Симферополе.
-                </p>
-              </div>
-              <div
-                class="hidden lg:flex absolute left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-gold border-4 border-gold/40 items-center justify-center"
-              >
-                <div class="w-2 h-2 rounded-full bg-bg-secondary"></div>
-              </div>
-              <div class="lg:pl-16 hidden lg:block">
-                <div
-                  class="glass-panel border border-gold/30 rounded-2xl p-6 h-full flex items-center"
-                >
-                  <div class="grid grid-cols-2 gap-4 w-full">
-                    <div class="text-center">
-                      <div class="font-display text-3xl text-gold">{{.Settings.StatsObjects}}</div>
-                      <div class="text-white/40 text-xs mt-1">объектов</div>
-                    </div>
-                    <div class="text-center">
-                      <div class="font-display text-3xl text-gold">{{.Settings.StatsStaff}}</div>
-                      <div class="text-white/40 text-xs mt-1">сотрудников</div>
-                    </div>
+          <div class="space-y-8">
+            {{range $i, $e := .History}}
+            <div class="timeline-item glass-panel border border-white/10 rounded-2xl p-6 lg:p-8" data-aos="fade-up" data-aos-delay="{{mul $i 80}}">
+              <div class="flex flex-col lg:flex-row lg:items-start gap-6">
+                <div class="shrink-0">
+                  <div class="inline-block glass-panel border border-gold/30 rounded-xl px-5 py-3">
+                    <span class="font-display text-2xl text-gold">{{$e.YearLabel}}</span>
                   </div>
                 </div>
+                <div class="flex-1">
+                  <h3 class="font-bold text-xl mb-3 text-white">{{$e.Title}}</h3>
+                  <p class="text-white/55 leading-relaxed">{{$e.Description}}</p>
+                  {{if $e.Quote}}
+                  <p class="mt-4 text-white/35 text-sm italic border-l-2 border-gold/30 pl-4">{{$e.Quote}}</p>
+                  {{end}}
+                </div>
               </div>
             </div>
+            {{end}}
           </div>
         </div>
       </div>

@@ -19,10 +19,17 @@ var Templates *template.Template
 
 // HomeData holds all data required to render the main page template.
 type HomeData struct {
-	Settings *models.SiteSettings
-	Services []models.Service
-	SEO      *models.SEOPage
-	Year     int
+	Settings   *models.SiteSettings
+	Services   []models.Service
+	SEO        *models.SEOPage
+	Year       int
+	Advantages []models.Advantage
+	History    []models.HistoryEvent
+	Licenses   []models.License
+	Clients    []models.Client
+	Team       []models.TeamMember
+	Process    []models.ProcessStep
+	FAQs       []models.FAQ
 }
 
 // Home renders the main single-page site.
@@ -48,11 +55,26 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 	seo, _ := models.GetSEOPage("/")
 
+	advantages, _ := models.GetAdvantages()
+	history, _ := models.GetHistoryEvents()
+	licenses, _ := models.GetLicenses()
+	clients, _ := models.GetClients()
+	team, _ := models.GetTeamMembers()
+	process, _ := models.GetProcessSteps()
+	faqs, _ := models.GetFAQs()
+
 	data := HomeData{
-		Settings: settings,
-		Services: services,
-		SEO:      seo,
-		Year:     time.Now().Year(),
+		Settings:   settings,
+		Services:   services,
+		SEO:        seo,
+		Year:       time.Now().Year(),
+		Advantages: advantages,
+		History:    history,
+		Licenses:   licenses,
+		Clients:    clients,
+		Team:       team,
+		Process:    process,
+		FAQs:       faqs,
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

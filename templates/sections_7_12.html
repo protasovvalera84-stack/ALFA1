@@ -19,209 +19,34 @@
       </p>
     </div>
 
-    <!-- Реальные клиенты с alfaunit1.ru/partners/ -->
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
 
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="0">
-        <div class="h-1.5 bg-gradient-to-r from-gold to-gold/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors text-gold font-display text-lg">С</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">«Советская Звезда»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Коммерческая недвижимость</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана объектов коммерческой недвижимости в Адмиралтейском районе Санкт-Петербурга. Контроль доступа арендаторов и посетителей.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Бизнес-центр</span>
-            <span class="tag">КПП</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="60">
+      {{range $i, $c := .Clients}}
+      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="{{mul (mod $i 3) 60}}">
+        {{if eq $c.ColorClass "blue"}}
         <div class="h-1.5 bg-gradient-to-r from-accent-blue to-accent-blue/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center shrink-0 group-hover:bg-accent-blue/20 transition-colors text-accent-blue font-display text-lg">Т</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">АО «Трест № 68»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Строительное предприятие</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана строительного предприятия, включающего 4 производственных подразделения. Круглосуточный контроль периметра и въезда техники.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Строительство</span>
-            <span class="tag">Периметр</span>
-            <span class="tag">24/7</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="120">
+        {{else}}
         <div class="h-1.5 bg-gradient-to-r from-gold to-gold/40"></div>
+        {{end}}
         <div class="p-6">
           <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors text-gold font-display text-lg">В</div>
+            {{if eq $c.ColorClass "blue"}}
+            <div class="w-12 h-12 rounded-xl bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center shrink-0 group-hover:bg-accent-blue/20 transition-colors text-accent-blue font-display text-lg">{{$c.Letter}}</div>
+            {{else}}
+            <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors text-gold font-display text-lg">{{$c.Letter}}</div>
+            {{end}}
             <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">«ВК Сервис»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Инфраструктурный объект</p>
+              <h3 class="font-bold text-base group-hover:text-gold transition-colors">{{$c.Name}}</h3>
+              <p class="text-white/40 text-xs mt-0.5">{{$c.TypeLabel}}</p>
             </div>
           </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана объектов компании, специализирующейся на очистке водоотведения и диагностике трубопроводов. Охрана оборудования и складов.</p>
+          <p class="text-white/50 text-sm leading-relaxed">{{$c.Description}}</p>
           <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Инфраструктура</span>
-            <span class="tag">Склад</span>
+            {{range $c.Tags}}<span class="tag">{{.}}</span>{{end}}
           </div>
         </div>
       </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="0">
-        <div class="h-1.5 bg-gradient-to-r from-accent-blue to-accent-blue/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center shrink-0 group-hover:bg-accent-blue/20 transition-colors text-accent-blue font-display text-lg">К</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">Гостиница «Северная Корона»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Строительная площадка</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана строительной площадки гостиницы в Санкт-Петербурге. Контроль материалов, техники и персонала на всех этапах строительства.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Стройплощадка</span>
-            <span class="tag">Материалы</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="60">
-        <div class="h-1.5 bg-gradient-to-r from-gold to-gold/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors text-gold font-display text-lg">Х</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">«Технология холода»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Холодильные склады</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана холодильных складских комплексов и арендуемых помещений. Контроль въезда транспорта, сохранность продукции.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Склад</span>
-            <span class="tag">Холодильник</span>
-            <span class="tag">Въезд/выезд</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="120">
-        <div class="h-1.5 bg-gradient-to-r from-accent-blue to-accent-blue/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center shrink-0 group-hover:bg-accent-blue/20 transition-colors text-accent-blue font-display text-lg">П</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">Ведомственная парковка</h3>
-              <p class="text-white/40 text-xs mt-0.5">Тележная ул., д. 32</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана ведомственной парковки: контроль въезда/выезда транспортных средств, видеонаблюдение, пропускной режим.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Парковка</span>
-            <span class="tag">Видеонаблюдение</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="0">
-        <div class="h-1.5 bg-gradient-to-r from-gold to-gold/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors text-gold font-display text-lg">А</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">ГК «Алгоритм»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Демонтажные работы</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана объектов группы компаний, специализирующейся на демонтажных работах. Обеспечение безопасности строительных площадок.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Демонтаж</span>
-            <span class="tag">Строительство</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="60">
-        <div class="h-1.5 bg-gradient-to-r from-accent-blue to-accent-blue/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center shrink-0 group-hover:bg-accent-blue/20 transition-colors text-accent-blue font-display text-lg">R</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">«Ренейссанс Констракшн»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Международная строительная компания</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана объектов международной строительной компании в Санкт-Петербурге. Многоуровневая система безопасности крупных стройплощадок.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Стройплощадка</span>
-            <span class="tag">Международный</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="120">
-        <div class="h-1.5 bg-gradient-to-r from-gold to-gold/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors text-gold font-display text-lg">М</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">«Медиэстетик»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Клиника эстетической медицины</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана клиники эстетической медицины: обеспечение безопасности пациентов и персонала, контроль доступа в медицинское учреждение.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Медицина</span>
-            <span class="tag">Клиника</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="0">
-        <div class="h-1.5 bg-gradient-to-r from-accent-blue to-accent-blue/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center shrink-0 group-hover:bg-accent-blue/20 transition-colors text-accent-blue font-display text-lg">Э</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">ООО «ЭнергоСвязьСтрой»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Электросетевая инфраструктура</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Охрана объектов компании, проектирующей электросетевую инфраструктуру от 0,4 до 750 кВ. Защита проектной документации и оборудования.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Энергетика</span>
-            <span class="tag">Офис</span>
-            <span class="tag">Оборудование</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="object-card group glass-panel border border-white/10 rounded-2xl overflow-hidden hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="60">
-        <div class="h-1.5 bg-gradient-to-r from-gold to-gold/40"></div>
-        <div class="p-6">
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors text-gold font-display text-lg">В</div>
-            <div>
-              <h3 class="font-bold text-base group-hover:text-gold transition-colors">«Венчурный Капитал»</h3>
-              <p class="text-white/40 text-xs mt-0.5">Инвестиционная компания</p>
-            </div>
-          </div>
-          <p class="text-white/50 text-sm leading-relaxed">Физическая охрана офиса инвестиционной компании, обеспечение конфиденциальности переговоров и защита ценных активов.</p>
-          <div class="flex flex-wrap gap-1.5 mt-4">
-            <span class="tag">Офис</span>
-            <span class="tag">Конфиденциальность</span>
-          </div>
-        </div>
-      </div>
+      {{end}}
 
       <!-- CTA-карточка -->
       <div class="object-card group glass-panel border border-gold/20 rounded-2xl overflow-hidden hover:border-gold/50 transition-all duration-300 bg-gold/5" data-aos="fade-up" data-aos-delay="120">
@@ -229,18 +54,14 @@
         <div class="p-6 flex flex-col justify-between h-full">
           <div>
             <div class="w-12 h-12 rounded-xl bg-gold/20 border border-gold/30 flex items-center justify-center mb-4 text-gold">
-              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-              </svg>
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             </div>
             <h3 class="font-bold text-base mb-2 text-gold">Ваш объект</h3>
             <p class="text-white/50 text-sm leading-relaxed">Охраняем более 50 объектов по всему Северо-Западу. Свяжитесь с нами для бесплатной оценки.</p>
           </div>
           <a href="#contacts" class="mt-5 inline-flex items-center gap-2 text-gold text-sm font-semibold hover:text-gold-light transition-colors">
             Получить расчёт
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-            </svg>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
           </a>
         </div>
       </div>
@@ -269,52 +90,25 @@
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-      <div class="team-card glass-panel border border-white/10 rounded-2xl p-7 group hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="0">
+      {{range $i, $m := .Team}}
+      <div class="team-card glass-panel border border-white/10 rounded-2xl p-7 group hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="{{mul $i 100}}">
         <div class="flex items-center gap-4 mb-5">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/20 flex items-center justify-center text-2xl font-display text-gold shrink-0">А</div>
+          {{if eq $m.ColorClass "blue"}}
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-blue/20 to-accent-blue/5 border border-accent-blue/20 flex items-center justify-center text-2xl font-display text-accent-blue shrink-0">{{$m.Letter}}</div>
+          {{else}}
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/20 flex items-center justify-center text-2xl font-display text-gold shrink-0">{{$m.Letter}}</div>
+          {{end}}
           <div>
-            <h3 class="font-bold text-base group-hover:text-gold transition-colors">Генеральный директор</h3>
-            <p class="text-white/40 text-sm">ЧОО «Альфа Юнит-1»</p>
+            <h3 class="font-bold text-base group-hover:text-gold transition-colors">{{$m.Title}}</h3>
+            <p class="text-white/40 text-sm">{{$m.Department}}</p>
           </div>
         </div>
-        <p class="text-white/50 text-sm leading-relaxed">Ветеран силовых структур. Руководит группой компаний с момента основания в 2002 году. Свыше 25 лет опыта в сфере безопасности.</p>
+        <p class="text-white/50 text-sm leading-relaxed">{{$m.Description}}</p>
         <div class="mt-5 pt-5 border-t border-white/10 flex flex-wrap gap-2">
-          <span class="tag">Стратегия</span>
-          <span class="tag">Управление</span>
-          <span class="tag">Ветеран «Альфа»</span>
+          {{range $m.Tags}}<span class="tag">{{.}}</span>{{end}}
         </div>
       </div>
-
-      <div class="team-card glass-panel border border-white/10 rounded-2xl p-7 group hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="100">
-        <div class="flex items-center gap-4 mb-5">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-blue/20 to-accent-blue/5 border border-accent-blue/20 flex items-center justify-center text-2xl font-display text-accent-blue shrink-0">О</div>
-          <div>
-            <h3 class="font-bold text-base group-hover:text-gold transition-colors">Начальник охраны</h3>
-            <p class="text-white/40 text-sm">Оперативный отдел</p>
-          </div>
-        </div>
-        <p class="text-white/50 text-sm leading-relaxed">Ветеран СОБР. Организация охранных мероприятий, тактическая подготовка личного состава. 20 лет боевого и оперативного опыта.</p>
-        <div class="mt-5 pt-5 border-t border-white/10 flex flex-wrap gap-2">
-          <span class="tag">Тактика</span>
-          <span class="tag">СОБР</span>
-          <span class="tag">Подготовка</span>
-        </div>
-      </div>
-
-      <div class="team-card glass-panel border border-white/10 rounded-2xl p-7 group hover:border-gold/40 transition-all duration-300" data-aos="fade-up" data-aos-delay="200">
-        <div class="flex items-center gap-4 mb-5">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/20 flex items-center justify-center text-2xl font-display text-gold shrink-0">К</div>
-          <div>
-            <h3 class="font-bold text-base group-hover:text-gold transition-colors">Руководитель HR</h3>
-            <p class="text-white/40 text-sm">Кадровая служба</p>
-          </div>
-        </div>
-        <p class="text-white/50 text-sm leading-relaxed">Отбор и аттестация сотрудников. Организация медицинских комиссий, квалификационных экзаменов в Росгвардии, физподготовки.</p>
-        <div class="mt-5 pt-5 border-t border-white/10 flex flex-wrap gap-2">
-          <span class="tag">Кадры</span>
-          <span class="tag">Аттестация</span>
-        </div>
-      </div>
+      {{end}}
 
     </div>
 
@@ -353,77 +147,19 @@
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
 
-      <div class="process-step group" data-aos="fade-up" data-aos-delay="0">
+      {{range $i, $s := .Process}}
+      <div class="process-step group" data-aos="fade-up" data-aos-delay="{{mul (mod $i 3) 80}}">
         <div class="flex items-start gap-5">
           <div class="w-16 h-16 rounded-2xl glass-panel border border-gold/40 flex items-center justify-center shrink-0 group-hover:bg-gold/10 transition-colors">
-            <span class="font-display text-2xl text-gold">01</span>
+            <span class="font-display text-2xl text-gold">{{$s.StepNum}}</span>
           </div>
           <div class="mt-2">
-            <h3 class="font-bold text-lg mb-2 group-hover:text-gold transition-colors">Заявка</h3>
-            <p class="text-white/50 text-sm leading-relaxed">Позвоните по телефону или заполните форму — специалист свяжется с вами в течение 30 минут в рабочее время.</p>
+            <h3 class="font-bold text-lg mb-2 group-hover:text-gold transition-colors">{{$s.Title}}</h3>
+            <p class="text-white/50 text-sm leading-relaxed">{{$s.Description}}</p>
           </div>
         </div>
       </div>
-
-      <div class="process-step group" data-aos="fade-up" data-aos-delay="80">
-        <div class="flex items-start gap-5">
-          <div class="w-16 h-16 rounded-2xl glass-panel border border-gold/40 flex items-center justify-center shrink-0 group-hover:bg-gold/10 transition-colors">
-            <span class="font-display text-2xl text-gold">02</span>
-          </div>
-          <div class="mt-2">
-            <h3 class="font-bold text-lg mb-2 group-hover:text-gold transition-colors">Анализ объекта</h3>
-            <p class="text-white/50 text-sm leading-relaxed">Выезд специалиста на объект. Оценка рисков, уязвимостей, составление технического задания на охрану.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="process-step group" data-aos="fade-up" data-aos-delay="160">
-        <div class="flex items-start gap-5">
-          <div class="w-16 h-16 rounded-2xl glass-panel border border-gold/40 flex items-center justify-center shrink-0 group-hover:bg-gold/10 transition-colors">
-            <span class="font-display text-2xl text-gold">03</span>
-          </div>
-          <div class="mt-2">
-            <h3 class="font-bold text-lg mb-2 group-hover:text-gold transition-colors">Подготовка решения</h3>
-            <p class="text-white/50 text-sm leading-relaxed">Разработка персонального плана охраны: численность, режим работы, оборудование. Коммерческое предложение.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="process-step group" data-aos="fade-up" data-aos-delay="0">
-        <div class="flex items-start gap-5">
-          <div class="w-16 h-16 rounded-2xl glass-panel border border-gold/40 flex items-center justify-center shrink-0 group-hover:bg-gold/10 transition-colors">
-            <span class="font-display text-2xl text-gold">04</span>
-          </div>
-          <div class="mt-2">
-            <h3 class="font-bold text-lg mb-2 group-hover:text-gold transition-colors">Заключение договора</h3>
-            <p class="text-white/50 text-sm leading-relaxed">Подписание договора на оказание охранных услуг. Все условия прозрачны, скрытых платежей нет.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="process-step group" data-aos="fade-up" data-aos-delay="80">
-        <div class="flex items-start gap-5">
-          <div class="w-16 h-16 rounded-2xl glass-panel border border-gold/40 flex items-center justify-center shrink-0 group-hover:bg-gold/10 transition-colors">
-            <span class="font-display text-2xl text-gold">05</span>
-          </div>
-          <div class="mt-2">
-            <h3 class="font-bold text-lg mb-2 group-hover:text-gold transition-colors">Организация охраны</h3>
-            <p class="text-white/50 text-sm leading-relaxed">Расстановка сотрудников, монтаж сигнализации и оборудования, инструктаж персонала. Начало охраны объекта.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="process-step group" data-aos="fade-up" data-aos-delay="160">
-        <div class="flex items-start gap-5">
-          <div class="w-16 h-16 rounded-2xl bg-gold/10 border-2 border-gold flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors">
-            <span class="font-display text-2xl text-gold">06</span>
-          </div>
-          <div class="mt-2">
-            <h3 class="font-bold text-lg mb-2 group-hover:text-gold transition-colors">Контроль качества</h3>
-            <p class="text-white/50 text-sm leading-relaxed">Постоянный мониторинг работы охраны, ежемесячные отчёты клиенту, оперативное реагирование на замечания.</p>
-          </div>
-        </div>
-      </div>
+      {{end}}
 
     </div>
   </div>
@@ -447,67 +183,18 @@
 
     <div class="faq-list space-y-3" id="faq-container">
 
-      <div class="faq-item glass-panel border border-white/10 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="0">
+      {{range $i, $f := .FAQs}}
+      <div class="faq-item glass-panel border border-white/10 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="{{mul $i 60}}">
         <button class="faq-question w-full flex items-center justify-between gap-4 p-6 text-left group" aria-expanded="false">
-          <span class="font-semibold text-base group-hover:text-gold transition-colors">Сколько стоят услуги охраны?</span>
+          <span class="font-semibold text-base group-hover:text-gold transition-colors">{{$f.Question}}</span>
           <svg class="faq-icon w-5 h-5 text-gold shrink-0 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
         </button>
         <div class="faq-answer hidden px-6 pb-6">
-          <p class="text-white/55 leading-relaxed">Стоимость зависит от типа объекта, количества постов, вооружённости охраны и режима работы. Позвоните нам или оставьте заявку — подготовим коммерческое предложение в течение 24 часов после осмотра объекта.</p>
+          <p class="text-white/55 leading-relaxed">{{$f.Answer}}</p>
         </div>
       </div>
+      {{end}}
 
-      <div class="faq-item glass-panel border border-white/10 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="60">
-        <button class="faq-question w-full flex items-center justify-between gap-4 p-6 text-left group" aria-expanded="false">
-          <span class="font-semibold text-base group-hover:text-gold transition-colors">Есть ли у компании лицензия на вооружённую охрану?</span>
-          <svg class="faq-icon w-5 h-5 text-gold shrink-0 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-        </button>
-        <div class="faq-answer hidden px-6 pb-6">
-          <p class="text-white/55 leading-relaxed">Да. Обе компании группы — ЧОО «Альфа Юнит-1» и ЧОО «Альфа Безопасность» — имеют все необходимые лицензии, включая вооружённую охрану, выданные в соответствии с Законом РФ от 11.03.1992 г. №2487-1 «О частной детективной и охранной деятельности».</p>
-        </div>
-      </div>
-
-      <div class="faq-item glass-panel border border-white/10 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="120">
-        <button class="faq-question w-full flex items-center justify-between gap-4 p-6 text-left group" aria-expanded="false">
-          <span class="font-semibold text-base group-hover:text-gold transition-colors">Как быстро можно приступить к охране объекта?</span>
-          <svg class="faq-icon w-5 h-5 text-gold shrink-0 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-        </button>
-        <div class="faq-answer hidden px-6 pb-6">
-          <p class="text-white/55 leading-relaxed">В стандартных случаях охрана объекта организуется в течение 1–3 рабочих дней после подписания договора. При срочной необходимости возможен выход охранников в течение 24 часов.</p>
-        </div>
-      </div>
-
-      <div class="faq-item glass-panel border border-white/10 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="180">
-        <button class="faq-question w-full flex items-center justify-between gap-4 p-6 text-left group" aria-expanded="false">
-          <span class="font-semibold text-base group-hover:text-gold transition-colors">В каких регионах вы работаете?</span>
-          <svg class="faq-icon w-5 h-5 text-gold shrink-0 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-        </button>
-        <div class="faq-answer hidden px-6 pb-6">
-          <p class="text-white/55 leading-relaxed">Основной регион — Санкт-Петербург и Ленинградская область. Также работаем по всему Северо-Западному федеральному округу. Дополнительный офис расположен в Симферополе (ул. Карла Маркса, 14).</p>
-        </div>
-      </div>
-
-      <div class="faq-item glass-panel border border-white/10 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="240">
-        <button class="faq-question w-full flex items-center justify-between gap-4 p-6 text-left group" aria-expanded="false">
-          <span class="font-semibold text-base group-hover:text-gold transition-colors">Что входит в охранную сигнализацию?</span>
-          <svg class="faq-icon w-5 h-5 text-gold shrink-0 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-        </button>
-        <div class="faq-answer hidden px-6 pb-6">
-          <p class="text-white/55 leading-relaxed">Мы устанавливаем охранную сигнализацию трёх типов: стандартная охранная, тревожная/пультовая (кнопка вызова группы реагирования) и комбинированная. Стоимость и тип подбираются индивидуально под объект.</p>
-        </div>
-      </div>
-
-      <div class="faq-item glass-panel border border-white/10 rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="300">
-        <button class="faq-question w-full flex items-center justify-between gap-4 p-6 text-left group" aria-expanded="false">
-          <span class="font-semibold text-base group-hover:text-gold transition-colors">Как трудоустроены сотрудники охраны?</span>
-          <svg class="faq-icon w-5 h-5 text-gold shrink-0 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-        </button>
-        <div class="faq-answer hidden px-6 pb-6">
-          <p class="text-white/55 leading-relaxed">Все сотрудники официально трудоустроены, имеют удостоверение частного охранника и прошли квалификационный экзамен в Росгвардии. Обязательно: медицинская комиссия, проверка биографии, физическая подготовка и психологическое тестирование.</p>
-        </div>
-      </div>
-
-    </div>
 
     <div class="mt-12 text-center" data-aos="fade-up">
       <p class="text-white/50 mb-6">Остались вопросы? Звоните — ответим сразу.</p>

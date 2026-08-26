@@ -302,6 +302,211 @@ func AdminSEO(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// AdminAdvantages manages the "Почему выбирают нас" section.
+func AdminAdvantages(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.AddAdvantage(r.FormValue("title"), r.FormValue("description"))
+		case "delete":
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				_ = models.DeleteAdvantage(id)
+			}
+		default: // save
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				active := r.FormValue("active") == "1"
+				_ = models.UpdateAdvantage(id, r.FormValue("title"), r.FormValue("description"), active)
+			}
+		}
+		http.Redirect(w, r, "/admin/advantages?saved=1", http.StatusFound)
+		return
+	}
+	items, _ := models.GetAllAdvantages()
+	renderAdmin(w, "advantages.html", "Преимущества", items, r)
+}
+
+// AdminHistory manages the "История компании" section.
+func AdminHistory(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.AddHistoryEvent(r.FormValue("year_label"), r.FormValue("title"), r.FormValue("description"), r.FormValue("quote"))
+		case "delete":
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				_ = models.DeleteHistoryEvent(id)
+			}
+		default:
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				active := r.FormValue("active") == "1"
+				_ = models.UpdateHistoryEvent(id, r.FormValue("year_label"), r.FormValue("title"), r.FormValue("description"), r.FormValue("quote"), active)
+			}
+		}
+		http.Redirect(w, r, "/admin/history?saved=1", http.StatusFound)
+		return
+	}
+	items, _ := models.GetAllHistoryEvents()
+	renderAdmin(w, "history.html", "История компании", items, r)
+}
+
+// AdminLicenses manages the "Лицензии и документы" section.
+func AdminLicenses(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.AddLicense(r.FormValue("type_label"), r.FormValue("title"), r.FormValue("description"), r.FormValue("badge_label"))
+		case "delete":
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				_ = models.DeleteLicense(id)
+			}
+		default:
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				active := r.FormValue("active") == "1"
+				_ = models.UpdateLicense(id, r.FormValue("type_label"), r.FormValue("title"), r.FormValue("description"), r.FormValue("badge_label"), active)
+			}
+		}
+		http.Redirect(w, r, "/admin/licenses?saved=1", http.StatusFound)
+		return
+	}
+	items, _ := models.GetAllLicenses()
+	renderAdmin(w, "licenses.html", "Лицензии и документы", items, r)
+}
+
+// AdminClients manages the "Наши клиенты" section.
+func AdminClients(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.AddClient(r.FormValue("letter"), r.FormValue("color_class"), r.FormValue("name"), r.FormValue("type_label"), r.FormValue("description"), r.FormValue("tags"))
+		case "delete":
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				_ = models.DeleteClient(id)
+			}
+		default:
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				active := r.FormValue("active") == "1"
+				_ = models.UpdateClient(id, r.FormValue("letter"), r.FormValue("color_class"), r.FormValue("name"), r.FormValue("type_label"), r.FormValue("description"), r.FormValue("tags"), active)
+			}
+		}
+		http.Redirect(w, r, "/admin/clients?saved=1", http.StatusFound)
+		return
+	}
+	items, _ := models.GetAllClients()
+	renderAdmin(w, "clients.html", "Наши клиенты", items, r)
+}
+
+// AdminTeam manages the "Наша команда" section.
+func AdminTeam(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.AddTeamMember(r.FormValue("letter"), r.FormValue("color_class"), r.FormValue("title"), r.FormValue("department"), r.FormValue("description"), r.FormValue("tags"))
+		case "delete":
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				_ = models.DeleteTeamMember(id)
+			}
+		default:
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				active := r.FormValue("active") == "1"
+				_ = models.UpdateTeamMember(id, r.FormValue("letter"), r.FormValue("color_class"), r.FormValue("title"), r.FormValue("department"), r.FormValue("description"), r.FormValue("tags"), active)
+			}
+		}
+		http.Redirect(w, r, "/admin/team?saved=1", http.StatusFound)
+		return
+	}
+	items, _ := models.GetAllTeamMembers()
+	renderAdmin(w, "team.html", "Наша команда", items, r)
+}
+
+// AdminProcess manages the "Как мы работаем" section.
+func AdminProcess(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.AddProcessStep(r.FormValue("step_num"), r.FormValue("title"), r.FormValue("description"))
+		case "delete":
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				_ = models.DeleteProcessStep(id)
+			}
+		default:
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				_ = models.UpdateProcessStep(id, r.FormValue("step_num"), r.FormValue("title"), r.FormValue("description"))
+			}
+		}
+		http.Redirect(w, r, "/admin/process?saved=1", http.StatusFound)
+		return
+	}
+	items, _ := models.GetProcessSteps()
+	renderAdmin(w, "process.html", "Как мы работаем", items, r)
+}
+
+// AdminFAQ manages the FAQ section.
+func AdminFAQ(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+		switch r.FormValue("action") {
+		case "add":
+			_ = models.AddFAQ(r.FormValue("question"), r.FormValue("answer"))
+		case "delete":
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				_ = models.DeleteFAQ(id)
+			}
+		default:
+			if id, err := strconv.Atoi(r.FormValue("id")); err == nil {
+				active := r.FormValue("active") == "1"
+				_ = models.UpdateFAQ(id, r.FormValue("question"), r.FormValue("answer"), active)
+			}
+		}
+		http.Redirect(w, r, "/admin/faq?saved=1", http.StatusFound)
+		return
+	}
+	items, _ := models.GetAllFAQs()
+	renderAdmin(w, "faq.html", "Вопросы и ответы", items, r)
+}
+
+// renderAdmin is a generic helper that renders an admin template with a list of items.
+func renderAdmin(w http.ResponseWriter, tmpl, title string, items any, r *http.Request) {
+	data := struct {
+		adminData
+		Items any
+		Saved bool
+	}{
+		adminData: baseAdmin(title),
+		Items:     items,
+		Saved:     r.URL.Query().Get("saved") == "1",
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err := AdminTemplates.ExecuteTemplate(w, tmpl, data); err != nil {
+		log.Printf("admin: %s render: %v", tmpl, err)
+	}
+}
+
 func renderLoginError(w http.ResponseWriter, errMsg string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	_ = AdminTemplates.ExecuteTemplate(w, "login.html", map[string]string{"Error": errMsg})
