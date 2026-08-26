@@ -377,7 +377,7 @@ func AdminClients(w http.ResponseWriter, r *http.Request) {
 		Saved:     r.URL.Query().Get("saved") == "1",
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "admin_clients.html", data); err != nil {
+	if err := AdminTemplates.ExecuteTemplate(w, "clients.html", data); err != nil {
 		log.Printf("admin: clients render: %v", err)
 	}
 }
@@ -438,7 +438,7 @@ func AdminTeam(w http.ResponseWriter, r *http.Request) {
 		Saved:     r.URL.Query().Get("saved") == "1",
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "admin_team.html", data); err != nil {
+	if err := AdminTemplates.ExecuteTemplate(w, "team.html", data); err != nil {
 		log.Printf("admin: team render: %v", err)
 	}
 }
@@ -493,7 +493,7 @@ func AdminProcess(w http.ResponseWriter, r *http.Request) {
 		Saved:     r.URL.Query().Get("saved") == "1",
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "admin_process.html", data); err != nil {
+	if err := AdminTemplates.ExecuteTemplate(w, "process.html", data); err != nil {
 		log.Printf("admin: process render: %v", err)
 	}
 }
@@ -543,7 +543,7 @@ func AdminFAQ(w http.ResponseWriter, r *http.Request) {
 		Saved:     r.URL.Query().Get("saved") == "1",
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "admin_faq.html", data); err != nil {
+	if err := AdminTemplates.ExecuteTemplate(w, "faq.html", data); err != nil {
 		log.Printf("admin: faq render: %v", err)
 	}
 }
@@ -593,7 +593,7 @@ func AdminAdvantages(w http.ResponseWriter, r *http.Request) {
 		Saved:     r.URL.Query().Get("saved") == "1",
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "admin_advantages.html", data); err != nil {
+	if err := AdminTemplates.ExecuteTemplate(w, "advantages.html", data); err != nil {
 		log.Printf("admin: advantages render: %v", err)
 	}
 }
@@ -650,7 +650,7 @@ func AdminHistory(w http.ResponseWriter, r *http.Request) {
 		Saved:     r.URL.Query().Get("saved") == "1",
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "admin_history.html", data); err != nil {
+	if err := AdminTemplates.ExecuteTemplate(w, "history.html", data); err != nil {
 		log.Printf("admin: history render: %v", err)
 	}
 }
@@ -707,7 +707,7 @@ func AdminLicenses(w http.ResponseWriter, r *http.Request) {
 		Saved:     r.URL.Query().Get("saved") == "1",
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := AdminTemplates.ExecuteTemplate(w, "admin_licenses.html", data); err != nil {
+	if err := AdminTemplates.ExecuteTemplate(w, "licenses.html", data); err != nil {
 		log.Printf("admin: licenses render: %v", err)
 	}
 }
