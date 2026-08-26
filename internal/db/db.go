@@ -89,6 +89,81 @@ func migrate(db *sql.DB) error {
 			token      TEXT    PRIMARY KEY,
 			expires_at TEXT    NOT NULL
 		)`,
+
+		// ── Clients (Section 7 — Наши клиенты) ───────────────────────────────
+		`CREATE TABLE IF NOT EXISTS clients (
+			id         INTEGER PRIMARY KEY AUTOINCREMENT,
+			initial    TEXT    NOT NULL DEFAULT '',
+			name       TEXT    NOT NULL,
+			type_label TEXT    NOT NULL DEFAULT '',
+			description TEXT   NOT NULL DEFAULT '',
+			tags       TEXT    NOT NULL DEFAULT '',
+			sort_order INTEGER NOT NULL DEFAULT 0,
+			active     INTEGER NOT NULL DEFAULT 1
+		)`,
+
+		// ── Team members (Section 8 — Команда) ───────────────────────────────
+		`CREATE TABLE IF NOT EXISTS team_members (
+			id         INTEGER PRIMARY KEY AUTOINCREMENT,
+			initial    TEXT    NOT NULL DEFAULT '',
+			name       TEXT    NOT NULL,
+			role       TEXT    NOT NULL DEFAULT '',
+			department TEXT    NOT NULL DEFAULT '',
+			description TEXT   NOT NULL DEFAULT '',
+			tags       TEXT    NOT NULL DEFAULT '',
+			sort_order INTEGER NOT NULL DEFAULT 0,
+			active     INTEGER NOT NULL DEFAULT 1
+		)`,
+
+		// ── Process steps (Section 9 — Как мы работаем) ──────────────────────
+		`CREATE TABLE IF NOT EXISTS process_steps (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			step_num    TEXT    NOT NULL DEFAULT '',
+			title       TEXT    NOT NULL,
+			description TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0,
+			active      INTEGER NOT NULL DEFAULT 1
+		)`,
+
+		// ── FAQ (Section 10) ──────────────────────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS faq_items (
+			id         INTEGER PRIMARY KEY AUTOINCREMENT,
+			question   TEXT    NOT NULL,
+			answer     TEXT    NOT NULL DEFAULT '',
+			sort_order INTEGER NOT NULL DEFAULT 0,
+			active     INTEGER NOT NULL DEFAULT 1
+		)`,
+
+		// ── Advantages (ПОЧЕМУ ВЫБИРАЮТ НАС) ─────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS advantages (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			title       TEXT    NOT NULL,
+			description TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0,
+			active      INTEGER NOT NULL DEFAULT 1
+		)`,
+
+		// ── History events (ИСТОРИЯ КОМПАНИИ) ────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS history_events (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			year_label  TEXT    NOT NULL,
+			title       TEXT    NOT NULL,
+			description TEXT    NOT NULL DEFAULT '',
+			quote       TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0,
+			active      INTEGER NOT NULL DEFAULT 1
+		)`,
+
+		// ── Licenses (ЛИЦЕНЗИИ И ДОКУМЕНТЫ) ──────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS licenses (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			type_label  TEXT    NOT NULL DEFAULT '',
+			company     TEXT    NOT NULL,
+			description TEXT    NOT NULL DEFAULT '',
+			status_text TEXT    NOT NULL DEFAULT 'Действующая лицензия',
+			sort_order  INTEGER NOT NULL DEFAULT 0,
+			active      INTEGER NOT NULL DEFAULT 1
+		)`,
 	}
 
 	for _, stmt := range stmts {
@@ -112,7 +187,8 @@ func seedDefaults(db *sql.DB) error {
 		return err
 	}
 	if count > 0 {
-		return nil // already seeded
+		// Run partial seeds for new tables added after initial deployment.
+		return seedNewTables(db)
 	}
 
 	log.Println("db: seeding initial data...")
@@ -131,11 +207,13 @@ func seedDefaults(db *sql.DB) error {
 		"founded_year":     "2002",
 		"hero_title":       "Комплексная безопасность объектов любой сложности",
 		"hero_subtitle":    "Вооружённая и невооружённая охрана. Санкт-Петербург и Северо-Запад России.",
-		"about_text": "Группа компаний включает ЧОО «Альфа Юнит-1» и ЧОО «Альфа Безопасность» (Санкт-Петербург) — входим в Международную Ассоциацию ветеранов подразделения антитеррора «Альфа». Основа нашей идеологии: профессионализм, надёжность и особый уровень доверия. Работаем по Закону РФ от 11.03.1992 г. №2487-1.",
+		"about_text":       "Группа компаний включает ЧОО «Альфа Юнит-1» и ЧОО «Альфа Безопасность» (Санкт-Петербург) — входим в Международную Ассоциацию ветеранов подразделения антитеррора «Альфа». Основа нашей идеологии: профессионализм, надёжность и особый уровень доверия. Работаем по Закону РФ от 11.03.1992 г. №2487-1.",
 		"stats_years":      "23",
 		"stats_objects":    "50+",
 		"stats_staff":      "200+",
 		"stats_licenses":   "2",
+		"whatsapp_link":    "",
+		"telegram_link":    "",
 		"robots_txt":       "User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: /sitemap.xml",
 		// Admin credentials (password set via env on first boot)
 		"admin_password_hash": "",
@@ -150,9 +228,66 @@ func seedDefaults(db *sql.DB) error {
 	}
 
 	// Seed initial services.
-	// Услуги точно соответствуют alfaunit1.ru
+	if err := seedServices(db); err != nil {
+		return err
+	}
+
+	// Seed SEO for the home page.
+	if _, err := db.Exec(`INSERT OR IGNORE INTO seo_pages (slug, title, description, schema_json)
+		VALUES ('/', ?, ?,
+		'{"@context":"https://schema.org","@type":"LocalBusiness","name":"Альфа Юнит-1","telephone":"+7-931-362-56-88","address":{"@type":"PostalAddress","streetAddress":"ул. Лифляндская, д. 3","addressLocality":"Санкт-Петербург","postalCode":"190020","addressCountry":"RU"},"openingHours":"Mo-Fr 09:00-20:00","url":"https://alfaunit1.ru"}')`,
+		"Альфа Юнит-1 — Охранная компания в Санкт-Петербурге | С 2002 года",
+		"Лицензированная охранная компания в СПб. Вооружённая и невооружённая охрана объектов. Члены ассоциации ветеранов «Альфа». Звоните: +7 (931) 362-56-88",
+	); err != nil {
+		return err
+	}
+
+	// Seed new content tables.
+	if err := seedNewTables(db); err != nil {
+		return err
+	}
+
+	log.Println("db: initial data seeded successfully")
+	return nil
+}
+
+// seedNewTables seeds tables added after initial deployment (idempotent via INSERT OR IGNORE).
+func seedNewTables(db *sql.DB) error {
+	if err := seedClients(db); err != nil {
+		return err
+	}
+	if err := seedTeam(db); err != nil {
+		return err
+	}
+	if err := seedProcess(db); err != nil {
+		return err
+	}
+	if err := seedFAQ(db); err != nil {
+		return err
+	}
+	if err := seedAdvantages(db); err != nil {
+		return err
+	}
+	if err := seedHistory(db); err != nil {
+		return err
+	}
+	if err := seedLicenses(db); err != nil {
+		return err
+	}
+	// Ensure new settings keys exist.
+	for _, pair := range [][2]string{
+		{"whatsapp_link", ""},
+		{"telegram_link", ""},
+	} {
+		if _, err := db.Exec(`INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)`, pair[0], pair[1]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func seedServices(db *sql.DB) error {
 	services := []struct{ name, desc, icon string }{
-		// ── Физическая охрана ─────────────────────────────────────────────
 		{
 			"Вооружённая охрана",
 			"Стационарные посты с вооружёнными сотрудниками для объектов повышенного уровня безопасности: склады, производства, ТРК.",
@@ -203,7 +338,6 @@ func seedDefaults(db *sql.DB) error {
 			"Организация контрольно-пропускных пунктов: управление доступом сотрудников, посетителей и транспортных средств.",
 			`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.633-4.596a18.666 18.666 0 01-2.485 5.33" /></svg>`,
 		},
-		// ── Сопровождение грузов ──────────────────────────────────────────
 		{
 			"Вооружённое сопровождение грузов",
 			"Сопровождение ценных и опасных грузов вооружёнными охранниками на автомобиле сопровождения по СПб и России.",
@@ -214,7 +348,6 @@ func seedDefaults(db *sql.DB) error {
 			"Сопровождение грузов и транспортных средств без огнестрельного оружия — для стандартных коммерческих перевозок.",
 			`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>`,
 		},
-		// ── Охранная сигнализация ─────────────────────────────────────────
 		{
 			"Охранная сигнализация",
 			"Проектирование и монтаж стандартных охранных систем сигнализации для офисов, складов и производственных помещений.",
@@ -231,7 +364,6 @@ func seedDefaults(db *sql.DB) error {
 			`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" /></svg>`,
 		},
 	}
-
 	for i, s := range services {
 		if _, err := db.Exec(
 			`INSERT OR IGNORE INTO services (name, description, icon, sort_order) VALUES (?, ?, ?, ?)`,
@@ -240,17 +372,178 @@ func seedDefaults(db *sql.DB) error {
 			return err
 		}
 	}
+	return nil
+}
 
-	// Seed SEO for the home page.
-	if _, err := db.Exec(`INSERT OR IGNORE INTO seo_pages (slug, title, description, schema_json)
-		VALUES ('/', ?, ?,
-		'{"@context":"https://schema.org","@type":"LocalBusiness","name":"Альфа Юнит-1","telephone":"+7-931-362-56-88","address":{"@type":"PostalAddress","streetAddress":"ул. Лифляндская, д. 3","addressLocality":"Санкт-Петербург","postalCode":"190020","addressCountry":"RU"},"openingHours":"Mo-Fr 09:00-20:00","url":"https://alfaunit1.ru"}')`,
-		"Альфа Юнит-1 — Охранная компания в Санкт-Петербурге | С 2002 года",
-		"Лицензированная охранная компания в СПб. Вооружённая и невооружённая охрана объектов. Члены ассоциации ветеранов «Альфа». Звоните: +7 (931) 362-56-88",
-	); err != nil {
-		return err
+func seedClients(db *sql.DB) error {
+	var n int
+	_ = db.QueryRow(`SELECT COUNT(*) FROM clients`).Scan(&n)
+	if n > 0 {
+		return nil
 	}
+	clients := []struct{ initial, name, typeLabel, description, tags string }{
+		{"С", "«Советская Звезда»", "Коммерческая недвижимость", "Охрана объектов коммерческой недвижимости в Адмиралтейском районе Санкт-Петербурга. Контроль доступа арендаторов и посетителей.", "Бизнес-центр,КПП"},
+		{"Т", "АО «Трест № 68»", "Строительное предприятие", "Охрана строительного предприятия, включающего 4 производственных подразделения. Круглосуточный контроль периметра и въезда техники.", "Строительство,Периметр,24/7"},
+		{"В", "«ВК Сервис»", "Инфраструктурный объект", "Охрана объектов компании, специализирующейся на очистке водоотведения и диагностике трубопроводов. Охрана оборудования и складов.", "Инфраструктура,Склад"},
+		{"К", "Гостиница «Северная Корона»", "Строительная площадка", "Охрана строительной площадки гостиницы в Санкт-Петербурге. Контроль материалов, техники и персонала на всех этапах строительства.", "Стройплощадка,Материалы"},
+		{"Х", "«Технология холода»", "Холодильные склады", "Охрана холодильных складских комплексов и арендуемых помещений. Контроль въезда транспорта, сохранность продукции.", "Склад,Холодильник,Въезд/выезд"},
+		{"П", "Ведомственная парковка", "Тележная ул., д. 32", "Охрана ведомственной парковки: контроль въезда/выезда транспортных средств, видеонаблюдение, пропускной режим.", "Парковка,Видеонаблюдение"},
+		{"А", "ГК «Алгоритм»", "Демонтажные работы", "Охрана объектов группы компаний, специализирующейся на демонтажных работах. Обеспечение безопасности строительных площадок.", "Демонтаж,Строительство"},
+		{"R", "«Ренейссанс Констракшн»", "Международная строительная компания", "Охрана объектов международной строительной компании в Санкт-Петербурге. Многоуровневая система безопасности крупных стройплощадок.", "Стройплощадка,Международный"},
+		{"М", "«Медиэстетик»", "Клиника эстетической медицины", "Охрана клиники эстетической медицины: обеспечение безопасности пациентов и персонала, контроль доступа в медицинское учреждение.", "Медицина,Клиника"},
+		{"Э", "ООО «ЭнергоСвязьСтрой»", "Электросетевая инфраструктура", "Охрана объектов компании, проектирующей электросетевую инфраструктуру от 0,4 до 750 кВ. Защита проектной документации и оборудования.", "Энергетика,Офис,Оборудование"},
+		{"В", "«Венчурный Капитал»", "Инвестиционная компания", "Физическая охрана офиса инвестиционной компании, обеспечение конфиденциальности переговоров и защита ценных активов.", "Офис,Конфиденциальность"},
+	}
+	for i, c := range clients {
+		if _, err := db.Exec(
+			`INSERT OR IGNORE INTO clients (initial, name, type_label, description, tags, sort_order) VALUES (?, ?, ?, ?, ?, ?)`,
+			c.initial, c.name, c.typeLabel, c.description, c.tags, i,
+		); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
-	log.Println("db: initial data seeded successfully")
+func seedTeam(db *sql.DB) error {
+	var n int
+	_ = db.QueryRow(`SELECT COUNT(*) FROM team_members`).Scan(&n)
+	if n > 0 {
+		return nil
+	}
+	members := []struct{ initial, name, role, department, description, tags string }{
+		{"А", "Генеральный директор", "Генеральный директор", "ЧОО «Альфа Юнит-1»", "Ветеран силовых структур. Руководит группой компаний с момента основания в 2002 году. Свыше 25 лет опыта в сфере безопасности.", "Стратегия,Управление,Ветеран «Альфа»"},
+		{"О", "Начальник охраны", "Начальник охраны", "Оперативный отдел", "Ветеран СОБР. Организация охранных мероприятий, тактическая подготовка личного состава. 20 лет боевого и оперативного опыта.", "Тактика,СОБР,Подготовка"},
+		{"К", "Руководитель HR", "Руководитель HR", "Кадровая служба", "Отбор и аттестация сотрудников. Организация медицинских комиссий, квалификационных экзаменов в Росгвардии, физподготовки.", "Кадры,Аттестация"},
+	}
+	for i, m := range members {
+		if _, err := db.Exec(
+			`INSERT OR IGNORE INTO team_members (initial, name, role, department, description, tags, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+			m.initial, m.name, m.role, m.department, m.description, m.tags, i,
+		); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func seedProcess(db *sql.DB) error {
+	var n int
+	_ = db.QueryRow(`SELECT COUNT(*) FROM process_steps`).Scan(&n)
+	if n > 0 {
+		return nil
+	}
+	steps := []struct{ num, title, desc string }{
+		{"01", "Заявка", "Позвоните по телефону или заполните форму — специалист свяжется с вами в течение 30 минут в рабочее время."},
+		{"02", "Анализ объекта", "Выезд специалиста на объект. Оценка рисков, уязвимостей, составление технического задания на охрану."},
+		{"03", "Подготовка решения", "Разработка персонального плана охраны: численность, режим работы, оборудование. Коммерческое предложение."},
+		{"04", "Заключение договора", "Подписание договора на оказание охранных услуг. Все условия прозрачны, скрытых платежей нет."},
+		{"05", "Организация охраны", "Расстановка сотрудников, монтаж сигнализации и оборудования, инструктаж персонала. Начало охраны объекта."},
+		{"06", "Контроль качества", "Постоянный мониторинг работы охраны, ежемесячные отчёты клиенту, оперативное реагирование на замечания."},
+	}
+	for i, s := range steps {
+		if _, err := db.Exec(
+			`INSERT OR IGNORE INTO process_steps (step_num, title, description, sort_order) VALUES (?, ?, ?, ?)`,
+			s.num, s.title, s.desc, i,
+		); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func seedFAQ(db *sql.DB) error {
+	var n int
+	_ = db.QueryRow(`SELECT COUNT(*) FROM faq_items`).Scan(&n)
+	if n > 0 {
+		return nil
+	}
+	items := []struct{ q, a string }{
+		{"Сколько стоят услуги охраны?", "Стоимость зависит от типа объекта, количества постов, вооружённости охраны и режима работы. Позвоните нам или оставьте заявку — подготовим коммерческое предложение в течение 24 часов после осмотра объекта."},
+		{"Есть ли у компании лицензия на вооружённую охрану?", "Да. Обе компании группы — ЧОО «Альфа Юнит-1» и ЧОО «Альфа Безопасность» — имеют все необходимые лицензии, включая вооружённую охрану, выданные в соответствии с Законом РФ от 11.03.1992 г. №2487-1 «О частной детективной и охранной деятельности»."},
+		{"Как быстро можно приступить к охране объекта?", "В стандартных случаях охрана объекта организуется в течение 1–3 рабочих дней после подписания договора. При срочной необходимости возможен выход охранников в течение 24 часов."},
+		{"В каких регионах вы работаете?", "Основной регион — Санкт-Петербург и Ленинградская область. Также работаем по всему Северо-Западному федеральному округу. Дополнительный офис расположен в Симферополе (ул. Карла Маркса, 14)."},
+		{"Что входит в охранную сигнализацию?", "Мы устанавливаем охранную сигнализацию трёх типов: стандартная охранная, тревожная/пультовая (кнопка вызова группы реагирования) и комбинированная. Стоимость и тип подбираются индивидуально под объект."},
+		{"Как трудоустроены сотрудники охраны?", "Все сотрудники официально трудоустроены, имеют удостоверение частного охранника и прошли квалификационный экзамен в Росгвардии. Обязательно: медицинская комиссия, проверка биографии, физическая подготовка и психологическое тестирование."},
+	}
+	for i, f := range items {
+		if _, err := db.Exec(
+			`INSERT OR IGNORE INTO faq_items (question, answer, sort_order) VALUES (?, ?, ?)`,
+			f.q, f.a, i,
+		); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func seedAdvantages(db *sql.DB) error {
+	var n int
+	_ = db.QueryRow(`SELECT COUNT(*) FROM advantages`).Scan(&n)
+	if n > 0 {
+		return nil
+	}
+	items := []struct{ title, desc string }{
+		{"Лицензированная деятельность", "Имеем все необходимые лицензии на осуществление частной охранной деятельности для обоих юридических лиц группы."},
+		{"Ветераны подразделения «Альфа»", "Костяк компании — профессионалы с боевым опытом, члены Международной ассоциации ветеранов «АЛЬФА»."},
+		{"Современные средства охраны", "Используем передовые технологии: системы видеонаблюдения, тревожные кнопки, GPS-мониторинг транспорта."},
+		{"Индивидуальный подход", "Разрабатываем план охраны конкретно под ваш объект: анализируем риски, предлагаем оптимальное решение."},
+		{"Полная конфиденциальность", "Строго соблюдаем режим коммерческой тайны. Информация об объектах и клиентах не разглашается третьим лицам."},
+		{"Круглосуточная поддержка", "Оперативный центр работает 24/7. Время реагирования на тревожный сигнал — минимальное по СПб."},
+	}
+	for i, a := range items {
+		if _, err := db.Exec(
+			`INSERT OR IGNORE INTO advantages (title, description, sort_order) VALUES (?, ?, ?)`,
+			a.title, a.desc, i,
+		); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func seedHistory(db *sql.DB) error {
+	var n int
+	_ = db.QueryRow(`SELECT COUNT(*) FROM history_events`).Scan(&n)
+	if n > 0 {
+		return nil
+	}
+	events := []struct{ year, title, desc, quote string }{
+		{"1980", "Олимпийская группа захвата", "Создана специальная группа захвата для обеспечения безопасности в период проведения Олимпийских игр в Москве. Одно из самых подготовленных и профессиональных подразделений МВД СССР — образец для всех последующих структур компании.", "Десятки блестяще проведённых операций — задержание вооружённых и особо опасных преступников живыми, без применения оружия"},
+		{"1985–1995", "Рота оперативного реагирования (РОР)", "Преемник олимпийской группы — Рота оперативного реагирования. Специализация: задержание вооружённых и особо опасных преступников. Десятки успешных операций по всему Северо-Западу.", ""},
+		{"1990-е", "Формирование Резерва и СОБР", "На базе РОР сформирован Резерв — подразделение для выполнения задач наивысшей сложности. Впоследствии преобразован в самостоятельный Специальный отряд быстрого реагирования (СОБР).", ""},
+		{"2002", "Основание ЧОО «Альфа Юнит-1»", "Ветераны элитных силовых структур создали частное охранное предприятие в Санкт-Петербурге. С первых дней компания объединила высочайший профессионализм силовых структур с гибкостью коммерческой организации.", ""},
+		{"Сегодня", "Группа компаний — лидер СЗФО", "Два юридических лица (ЧОО «Альфа Юнит-1» и ЧОО «Альфа Безопасность»), более 50+ объектов под охраной, 200+ сотрудников. Офисы в Санкт-Петербурге и Симферополе.", ""},
+	}
+	for i, e := range events {
+		if _, err := db.Exec(
+			`INSERT OR IGNORE INTO history_events (year_label, title, description, quote, sort_order) VALUES (?, ?, ?, ?, ?)`,
+			e.year, e.title, e.desc, e.quote, i,
+		); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func seedLicenses(db *sql.DB) error {
+	var n int
+	_ = db.QueryRow(`SELECT COUNT(*) FROM licenses`).Scan(&n)
+	if n > 0 {
+		return nil
+	}
+	items := []struct{ typeLabel, company, desc, status string }{
+		{"Лицензия ЧОО", "«Альфа Юнит-1»", "Лицензия на осуществление частной охранной деятельности ЧОО «Альфа Юнит-1». Санкт-Петербург и СЗФО.", "Действующая лицензия"},
+		{"Лицензия ЧОО", "«Альфа Безопасность»", "Лицензия на осуществление частной охранной деятельности ЧОО «Альфа Безопасность». Санкт-Петербург и СЗФО.", "Действующая лицензия"},
+		{"Свидетельство", "Ассоциация «Альфа»", "Свидетельство о членстве в Международной ассоциации ветеранов подразделения «АЛЬФА» — знак высокого профессионализма.", "Действующее свидетельство"},
+	}
+	for i, l := range items {
+		if _, err := db.Exec(
+			`INSERT OR IGNORE INTO licenses (type_label, company, description, status_text, sort_order) VALUES (?, ?, ?, ?, ?)`,
+			l.typeLabel, l.company, l.desc, l.status, i,
+		); err != nil {
+			return err
+		}
+	}
 	return nil
 }

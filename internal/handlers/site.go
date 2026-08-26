@@ -19,10 +19,17 @@ var Templates *template.Template
 
 // HomeData holds all data required to render the main page template.
 type HomeData struct {
-	Settings *models.SiteSettings
-	Services []models.Service
-	SEO      *models.SEOPage
-	Year     int
+	Settings      *models.SiteSettings
+	Services      []models.Service
+	SEO           *models.SEOPage
+	Year          int
+	Advantages    []models.Advantage
+	HistoryEvents []models.HistoryEvent
+	Licenses      []models.License
+	Clients       []models.Client
+	TeamMembers   []models.TeamMember
+	ProcessSteps  []models.ProcessStep
+	FAQItems      []models.FAQItem
 }
 
 // Home renders the main single-page site.
@@ -39,20 +46,28 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	services, err := models.GetServices()
-	if err != nil {
-		log.Printf("handlers: Home: get services: %v", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
+	services, _ := models.GetServices()
 	seo, _ := models.GetSEOPage("/")
+	advantages, _ := models.GetAdvantages()
+	historyEvents, _ := models.GetHistoryEvents()
+	licenses, _ := models.GetLicenses()
+	clients, _ := models.GetClients()
+	teamMembers, _ := models.GetTeamMembers()
+	processSteps, _ := models.GetProcessSteps()
+	faqItems, _ := models.GetFAQItems()
 
 	data := HomeData{
-		Settings: settings,
-		Services: services,
-		SEO:      seo,
-		Year:     time.Now().Year(),
+		Settings:      settings,
+		Services:      services,
+		SEO:           seo,
+		Year:          time.Now().Year(),
+		Advantages:    advantages,
+		HistoryEvents: historyEvents,
+		Licenses:      licenses,
+		Clients:       clients,
+		TeamMembers:   teamMembers,
+		ProcessSteps:  processSteps,
+		FAQItems:      faqItems,
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

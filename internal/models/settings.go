@@ -27,6 +27,8 @@ type SiteSettings struct {
 	StatsObjects    string
 	StatsStaff      string
 	StatsLicenses   string
+	WhatsAppLink    string
+	TelegramLink    string
 	RobotsTxt       string
 	Domain          string
 }
@@ -70,6 +72,8 @@ func GetSettings() (*SiteSettings, error) {
 		StatsObjects:    m["stats_objects"],
 		StatsStaff:      m["stats_staff"],
 		StatsLicenses:   m["stats_licenses"],
+		WhatsAppLink:    m["whatsapp_link"],
+		TelegramLink:    m["telegram_link"],
 		RobotsTxt:       m["robots_txt"],
 		Domain:          m["domain"],
 	}, nil
