@@ -89,6 +89,73 @@ func migrate(db *sql.DB) error {
 			token      TEXT    PRIMARY KEY,
 			expires_at TEXT    NOT NULL
 		)`,
+
+		// ── Advantages (Преимущества) ──────────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS advantages (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			title       TEXT    NOT NULL,
+			description TEXT    NOT NULL DEFAULT '',
+			icon        TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0,
+			active      INTEGER NOT NULL DEFAULT 1
+		)`,
+
+		// ── History (История) ─────────────────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS history_events (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			year        TEXT    NOT NULL,
+			title       TEXT    NOT NULL,
+			description TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0
+		)`,
+
+		// ── Licenses (Лицензии) ───────────────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS licenses (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			name        TEXT    NOT NULL,
+			number      TEXT    NOT NULL DEFAULT '',
+			issuer      TEXT    NOT NULL DEFAULT '',
+			issued_at   TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0
+		)`,
+
+		// ── Clients (Клиенты) ─────────────────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS clients (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			name        TEXT    NOT NULL,
+			sector      TEXT    NOT NULL DEFAULT '',
+			description TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0
+		)`,
+
+		// ── Team members (Команда) ────────────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS team_members (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			name        TEXT    NOT NULL,
+			position    TEXT    NOT NULL DEFAULT '',
+			bio         TEXT    NOT NULL DEFAULT '',
+			photo_url   TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0,
+			active      INTEGER NOT NULL DEFAULT 1
+		)`,
+
+		// ── Workflow steps (Как мы работаем) ─────────────────────────────
+		`CREATE TABLE IF NOT EXISTS workflow_steps (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			step_number INTEGER NOT NULL DEFAULT 1,
+			title       TEXT    NOT NULL,
+			description TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0
+		)`,
+
+		// ── FAQ items ─────────────────────────────────────────────────────
+		`CREATE TABLE IF NOT EXISTS faq_items (
+			id          INTEGER PRIMARY KEY AUTOINCREMENT,
+			question    TEXT    NOT NULL,
+			answer      TEXT    NOT NULL DEFAULT '',
+			sort_order  INTEGER NOT NULL DEFAULT 0,
+			active      INTEGER NOT NULL DEFAULT 1
+		)`,
 	}
 
 	for _, stmt := range stmts {

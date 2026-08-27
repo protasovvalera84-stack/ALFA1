@@ -115,6 +115,14 @@ func main() {
 	adminRoutes.HandleFunc("/admin/services", handlers.AdminServices)
 	adminRoutes.HandleFunc("/admin/contacts", handlers.AdminContacts)
 	adminRoutes.HandleFunc("/admin/seo", handlers.AdminSEO)
+	// Content sections (7 new sections).
+	adminRoutes.HandleFunc("/admin/advantages", handlers.AdminAdvantages)
+	adminRoutes.HandleFunc("/admin/history", handlers.AdminHistory)
+	adminRoutes.HandleFunc("/admin/licenses", handlers.AdminLicenses)
+	adminRoutes.HandleFunc("/admin/clients", handlers.AdminClients)
+	adminRoutes.HandleFunc("/admin/team", handlers.AdminTeam)
+	adminRoutes.HandleFunc("/admin/workflow", handlers.AdminWorkflow)
+	adminRoutes.HandleFunc("/admin/faq", handlers.AdminFAQ)
 
 	mux.Handle("/admin/", middleware.RequireAuth(adminRoutes))
 
